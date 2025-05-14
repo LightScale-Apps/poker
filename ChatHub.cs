@@ -17,6 +17,10 @@ public class ChatHub : Hub
         await Groups.AddToGroupAsync(Context.ConnectionId, "game");
     }
 
+    public async Task MyName() {
+        await Clients.Caller.SendAsync("Name", Clients.Caller.playerName);
+    }
+
 
     //clients:
     //display cards when given by server
