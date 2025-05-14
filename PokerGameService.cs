@@ -40,6 +40,17 @@ public class PokerGameService
 
     public List<Player> GetPlayers() => _players;
 
+    private List<Card> Draw(int cards) {
+        int i = cards;
+        var hand = new List<Card>();
+        while (i > 0) {
+            hand.Add(_deck[0]);
+            _deck.RemoveAt(0);
+            i -= 1;
+        }
+        return hand;
+    }
+
     public void DealCards() {
         // Reset the game state
         InitializeDeck();
@@ -47,24 +58,15 @@ public class PokerGameService
         foreach (var player in _players) {
             player.Cards.Clear();
         }
-
         // Shuffle deck
         ShuffleDeck();
 
         // Deal 2 cards to each player
         foreach (var player in _players) {
-            for (int i = 0; i < 2; i++)
-            {
-                var card = _deck[0];
-                _deck.RemoveAt(0);
-                player.Cards.Add(card);
-            }
+            player.Cards = Draw(2)
         }
 
-        for (int i = 0; i < 4; i++) {
-            _communityCards.Add(_deck[0]);
-            _deck.RemoveAt(0);
-        }
+        _communityCards = Draw(5)
     }
     private void ShuffleDeck()
     {
