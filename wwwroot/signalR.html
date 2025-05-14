@@ -8,11 +8,11 @@
 
     <br><h1>message input</h1>
     <input type="text" id="messageInput" />
-    <button id="sendButton">Send Message</button>
+    <button onclick="send()">Send Message</button>
     <br><br>
 
     <h1>MESSAGES BELOW</h1>
-    <button onclick="sr">reload</button>
+    <button onclick="sr()">configure</button>
     <ul id="messagesList"></ul>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.0/signalr.min.js"></script>
@@ -26,6 +26,11 @@ function sr() {
     li.textContent = `${modelResponse}`;
     document.getElementById("messagesList").appendChild(li);
   });
+
+  function send() {
+    const str = document.getElementById("messageInput").value;
+    user.chatConnection.invoke("SendMessage", str)
+  }
 }
 
 class APIConnection {
