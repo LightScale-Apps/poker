@@ -65,11 +65,11 @@ public class PokerGameService
         foreach (var player in _players) {
             player.Cards = Draw(2);
         }        
-_communityCards.Add(Draw(1));
-_communityCards.Add(Draw(1));
-_communityCards.Add(Draw(1));
-_communityCards.Add(Draw(1));
-_communityCards.Add(Draw(1));
+_communityCards.Add(Draw(1)[0]);
+_communityCards.Add(Draw(1)[0]);
+_communityCards.Add(Draw(1)[0]);
+_communityCards.Add(Draw(1)[0]);
+_communityCards.Add(Draw(1)[0]);
     }
     private void ShuffleDeck()
     {
