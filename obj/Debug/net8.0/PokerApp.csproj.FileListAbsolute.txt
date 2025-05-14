@@ -28,3 +28,4 @@
 /home/user/Desktop/poker/obj/Debug/net8.0/PokerApp.pdb
 /home/user/Desktop/poker/obj/Debug/net8.0/PokerApp.genruntimeconfig.cache
 /home/user/Desktop/poker/obj/Debug/net8.0/ref/PokerApp.dll
+/home/user/Desktop/poker/obj/Debug/net8.0/PokerApp.sourcelink.json

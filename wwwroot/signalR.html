@@ -12,19 +12,28 @@
     <br><br>
 
     <h1>MESSAGES BELOW</h1>
+    <button onclick="sr">reload</button>
     <ul id="messagesList"></ul>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.0/signalr.min.js"></script>
     <script type="text/javascript">
+
+function sr() {
+  user.chatConnection.start();
+
+  user.chatConnection.on("ReceiveMessage", (modelResponse) => {
+    let li = document.createElement("li");
+    li.textContent = `${modelResponse}`;
+    document.getElementById("messagesList").appendChild(li);
+  });
+}
 
 class APIConnection {
   constructor() {
     this.URL = "http://192.168.68.116:3141/";
     this.authorized = false;
     this.data = {};
-    this.chatConnection = new signalR.HubConnectionBuilder()
-      .withUrl("/game", { accessTokenFactory: () => this.token })
-      .build();
+    this.chatConnection = new signalR.HubConnectionBuilder().withUrl("/game").build();
   }
 
   async game(input) {
@@ -37,15 +46,8 @@ class APIConnection {
   }
 }
 
-//Usage:
 user = new APIConnection();
 
-// Receive messages from the server
-user.chatConnection.on("ReceiveMessage", (modelResponse) => {
-    let li = document.createElement("li");
-    li.textContent = `${modelResponse}`;
-    document.getElementById("messagesList").appendChild(li);
-});
   </script>
   </body>
 </html>

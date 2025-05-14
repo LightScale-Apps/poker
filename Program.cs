@@ -1,6 +1,8 @@
+using Microsoft.AspNetCore.SignalR;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services.AddSignalR();
 builder.Services.AddRazorPages();
 
 var app = builder.Build();
@@ -21,5 +23,7 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapRazorPages();
+
+app.MapHub<ChatHub>("/game");
 
 app.Run();
