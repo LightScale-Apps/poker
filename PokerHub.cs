@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 public class PokerHub : Hub
 {
@@ -10,12 +13,7 @@ public class PokerHub : Hub
         _logger = logger;
     }
 
-    public async Task JoinPlayer(string username)
-    {
-        var existingPlayer = await Context.FirstOrDefault((p) => p.ConnectionId == Context.ConnectionId);
-        if (existingPlayer != null) await _gameService.RemovePlayer(Context.ConnectionId);
-
-
+    public async Task JoinPlayer(string username) {
         _gameService.AddPlayer(Context.ConnectionId, username);
         await SendPlayerList();
     }
