@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.SignalR;
 
 public class ChatHub : Hub
@@ -10,6 +11,10 @@ public class ChatHub : Hub
         playerList += ", " + name;
         playerCount += 1;
         await Clients.All.SendAsync("PlayerList", playerCount + " Players: " + playerList);
+    }
+
+    public async Task JoinRoom(string playerName) {
+        await Groups.AddToGroupAsync(Context.ConnectionId, "game");
     }
 
 
