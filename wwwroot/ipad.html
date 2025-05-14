@@ -27,24 +27,24 @@
             box-shadow: 
                 0 0 100px rgba(0,0,0,0.3),
                 inset 0 0 60px rgba(0,0,0,0.3);
-            width: min(95vw, 1200px);
-            height: min(85vh, 800px);
+            width: 98vw;
+            height: 85vh;
             border-radius: min(100px, 10vw);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            margin: 20px;
+            margin: 10px;
             position: relative;
-            padding: 20px;
+            padding: 10px;
         }
 
         .playing-card {
-            width: min(120px, 20vw); /* Reduced from 180px */
-            height: min(168px, 28vw); /* Reduced from 252px, maintaining aspect ratio */
+            width: calc((98vw - 60px) / 5); /* Total width minus total gaps (4 * 15px) divided by 5 cards */
+            height: calc(((98vw - 60px) / 5) * 1.4); /* Maintain 1.4 aspect ratio */
             position: relative;
             perspective: 1000px;
-            margin: min(5px, 1vw); /* Reduced margin */
+            margin: 0;
         }
 
         .playing-card-inner {
@@ -62,7 +62,7 @@
             height: 100%;
             -webkit-backface-visibility: hidden;
             backface-visibility: hidden;
-            border-radius: min(10px, 2.5vw);
+            border-radius: min(15px, 3vw);
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
 
@@ -102,7 +102,7 @@
         }
 
         .card-suit {
-            font-size: min(72px, 18vw); /* Reduced from 108px */
+            font-size: min(15vw, 120px);
             position: absolute;
             top: 50%;
             left: 50%;
@@ -115,7 +115,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: min(6px, 1.5vw); /* Reduced padding */
+            padding: min(8px, 2vw);
         }
 
         .card-corner.top-left {
@@ -130,23 +130,23 @@
         }
 
         .corner-value {
-            font-size: min(18px, 4.5vw); /* Reduced from 28px */
+            font-size: min(4vw, 32px);
             font-weight: bold;
             line-height: 1;
         }
 
         .corner-suit {
-            font-size: min(16px, 4vw); /* Reduced from 24px */
+            font-size: min(3.5vw, 28px);
             line-height: 1;
         }
 
         .community-cards {
             display: flex;
-            gap: min(10px, 2.5vw); /* Reduced gap */
-            padding: min(20px, 5vw); /* Reduced padding */
+            gap: 15px;
+            padding: 10px;
             justify-content: center;
-            flex-wrap: nowrap; /* Prevent wrapping */
-            max-width: 100%;
+            flex-wrap: nowrap;
+            width: 98vw;
         }
 
         .red {
@@ -159,20 +159,17 @@
 
         @media (max-width: 768px) {
             .table {
-                width: 95vw;
                 height: 70vh;
                 border-radius: 30px;
-                margin: 10px;
             }
 
             .community-cards {
-                gap: 5px;
-                padding: 10px;
+                gap: 10px;
             }
 
             .playing-card {
-                width: 16vw; /* Even smaller on very small screens */
-                height: 22.4vw; /* Maintain aspect ratio */
+                width: calc((98vw - 40px) / 5); /* Adjusted for smaller gap on mobile */
+                height: calc(((98vw - 40px) / 5) * 1.4);
             }
         }
 
