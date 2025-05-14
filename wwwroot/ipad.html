@@ -179,18 +179,47 @@
                 min-height: -webkit-fill-available;
             }
         }
+
+        #playerList {
+            font-size: 24px;
+            color: white;
+        }
     </style>
 </head>
 <body>
+    <h6 id="playerList"></h6>
     <div class="table">
         <div class="community-cards" id="communityCards"></div>
     </div>
-    
-    <button onclick="handleNextAction()" class="next-button">
-        Next
-    </button>
+
+    <button onclick="handleNextAction()" class="next-button">Next</button>
+
+
 
     <script>
+        Game = new signalR.HubConnectionBuilder().withUrl("/game").build();
+
+
+        function connectToServer(interval) {
+            if (Game.state != 'Connected') {
+                Game.start()
+            } else {
+                configureListeners();
+                window.clearInterval(interval)
+            }
+        }
+
+        function configureListeners() {
+            Game.on("PlayerList", (player_list) => {
+                document.getElementById("playerList").innerHTML = player_list
+            })
+        }
+
+        let SR;
+        SR = window.setInterval(() => {
+            connectToServer(SR);
+        }, 3000)
+
         const suits = {
             S: { symbol: "\u2660", color: "black", name: "spades" },
             H: { symbol: "\u2665", color: "red", name: "hearts" },
