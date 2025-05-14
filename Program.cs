@@ -4,6 +4,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSignalR();
 builder.Services.AddRazorPages();
+builder.Services.AddSingleton<IGameService, GameService>();
 
 var app = builder.Build();
 
