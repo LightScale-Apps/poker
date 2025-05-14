@@ -27,6 +27,7 @@ public class PokerHub : Hub
         foreach (var p in allPlayers) {
             await Clients.Client(p.ConnectionId).SendAsync("HoleCards", p.Cards);
         }
+        await Clients.Caller.SendAsync("CommunityCards", _gameService.GetCommunityCards());
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception)

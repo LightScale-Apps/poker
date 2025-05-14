@@ -61,6 +61,10 @@
             document.getElementById("playerList").textContent = playerList.join(", ");
         });
 
+        connection.on("CommunityCards", (commCards) => {
+            document.getElementById("communityCards").textContent = commCards.join(", ");
+        })
+
         async function startConnection() {
             try {
                 await connection.start();
