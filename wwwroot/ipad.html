@@ -27,8 +27,8 @@
             box-shadow: 
                 0 0 100px rgba(0,0,0,0.3),
                 inset 0 0 60px rgba(0,0,0,0.3);
-            width: min(90vw, 1200px);
-            height: min(80vh, 800px);
+            width: min(95vw, 1200px);
+            height: min(85vh, 800px);
             border-radius: min(100px, 10vw);
             display: flex;
             flex-direction: column;
@@ -40,11 +40,11 @@
         }
 
         .playing-card {
-            width: min(180px, 45vw);
-            height: min(252px, 63vw);
+            width: min(120px, 20vw); /* Reduced from 180px */
+            height: min(168px, 28vw); /* Reduced from 252px, maintaining aspect ratio */
             position: relative;
             perspective: 1000px;
-            margin: min(10px, 2vw);
+            margin: min(5px, 1vw); /* Reduced margin */
         }
 
         .playing-card-inner {
@@ -52,13 +52,8 @@
             width: 100%;
             height: 100%;
             text-align: center;
-            transition: transform 0.6s;
             transform-style: preserve-3d;
             cursor: pointer;
-        }
-
-        .playing-card:hover .playing-card-inner {
-            transform: translateY(-5px) rotateY(10deg);
         }
 
         .card-face {
@@ -67,8 +62,8 @@
             height: 100%;
             -webkit-backface-visibility: hidden;
             backface-visibility: hidden;
-            border-radius: min(15px, 4vw);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            border-radius: min(10px, 2.5vw);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
 
         .card-front {
@@ -83,8 +78,8 @@
 
         .card-back {
             background: linear-gradient(45deg, #1a4b2c 25%, #2d6a4f 25%, #2d6a4f 50%, #1a4b2c 50%, #1a4b2c 75%, #2d6a4f 75%);
-            background-size: 30px 30px;
-            border: min(12px, 3vw) solid white;
+            background-size: 20px 20px;
+            border: min(8px, 2vw) solid white;
             position: absolute;
             top: 0;
             left: 0;
@@ -101,23 +96,13 @@
             border: none;
             border-radius: min(12px, 3vw);
             cursor: pointer;
-            transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             z-index: 100;
             -webkit-tap-highlight-color: transparent;
         }
 
-        .next-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-        }
-
-        .next-button:active {
-            transform: translateY(1px);
-        }
-
         .card-suit {
-            font-size: min(108px, 27vw);
+            font-size: min(72px, 18vw); /* Reduced from 108px */
             position: absolute;
             top: 50%;
             left: 50%;
@@ -130,7 +115,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: min(10px, 2.5vw);
+            padding: min(6px, 1.5vw); /* Reduced padding */
         }
 
         .card-corner.top-left {
@@ -145,22 +130,22 @@
         }
 
         .corner-value {
-            font-size: min(28px, 7vw);
+            font-size: min(18px, 4.5vw); /* Reduced from 28px */
             font-weight: bold;
             line-height: 1;
         }
 
         .corner-suit {
-            font-size: min(24px, 6vw);
+            font-size: min(16px, 4vw); /* Reduced from 24px */
             line-height: 1;
         }
 
         .community-cards {
             display: flex;
-            gap: min(20px, 5vw);
-            padding: min(30px, 7.5vw);
+            gap: min(10px, 2.5vw); /* Reduced gap */
+            padding: min(20px, 5vw); /* Reduced padding */
             justify-content: center;
-            flex-wrap: wrap;
+            flex-wrap: nowrap; /* Prevent wrapping */
             max-width: 100%;
         }
 
@@ -172,28 +157,6 @@
             color: #2d3748;
         }
 
-        @keyframes cardEntrance {
-            from {
-                opacity: 0;
-                transform: translateY(40px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .playing-card {
-            animation: cardEntrance 0.5s ease-out forwards;
-        }
-
-        /* Add a slight delay for each card */
-        .playing-card:nth-child(1) { animation-delay: 0s; }
-        .playing-card:nth-child(2) { animation-delay: 0.1s; }
-        .playing-card:nth-child(3) { animation-delay: 0.2s; }
-        .playing-card:nth-child(4) { animation-delay: 0.3s; }
-        .playing-card:nth-child(5) { animation-delay: 0.4s; }
-
         @media (max-width: 768px) {
             .table {
                 width: 95vw;
@@ -203,8 +166,13 @@
             }
 
             .community-cards {
-                gap: 10px;
-                padding: 15px;
+                gap: 5px;
+                padding: 10px;
+            }
+
+            .playing-card {
+                width: 16vw; /* Even smaller on very small screens */
+                height: 22.4vw; /* Maintain aspect ratio */
             }
         }
 
@@ -303,22 +271,18 @@
 
         function handleNextAction() {
             if (currentPhase === 0) {
-                // Start new hand
                 createDeck();
                 shuffle(7);
                 communityCards = [];
                 document.getElementById("communityCards").innerHTML = "";
-                // Deal flop
                 for (let i = 0; i < 3; i++) {
                     communityCards.push(deck.pop());
                 }
                 currentPhase = 1;
             } else if (currentPhase < 3) {
-                // Deal turn or river
                 communityCards.push(deck.pop());
                 currentPhase++;
             } else {
-                // Reset for new hand
                 currentPhase = 0;
                 communityCards = [];
                 document.getElementById("communityCards").innerHTML = "";
@@ -328,7 +292,7 @@
             const communityContainer = document.getElementById("communityCards");
             communityContainer.innerHTML = "";
 
-            communityCards.forEach((card, index) => {
+            communityCards.forEach((card) => {
                 const cardElement = createCard(card.value, card.suit);
                 communityContainer.appendChild(cardElement);
             });
