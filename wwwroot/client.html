@@ -59,26 +59,10 @@
             .withAutomaticReconnect()
             .build();
 
-        connection.on("ReceiveCards", (cards) => {
-            document.getElementById("myCards").textContent = 
-                cards.map(card => `${card.value} of ${card.suit}`).join(", ");
-        });
-
-        connection.on("GameStarted", () => {
-            document.getElementById("myCards").textContent = "Not dealt yet";
-        });
-
         async function startConnection() {
             try {
                 await connection.start();
                 console.log("Connected to hub");
-                
-                // If username was previously stored, auto-join
-                const storedUsername = localStorage.getItem('pokerUsername');
-                if (storedUsername) {
-                    document.getElementById("username").value = storedUsername;
-                    await joinGame();
-                }
             } catch (err) {
                 console.error(err);
                 setTimeout(startConnection, 5000);
@@ -94,8 +78,6 @@
             
             try {
                 await connection.invoke("JoinPlayer", username);
-                localStorage.setItem('pokerUsername', username);
-                document.querySelector('.login').style.display = 'none';
             } catch (err) {
                 console.error(err);
                 alert("Error joining game");
