@@ -53,6 +53,205 @@ class APIConnection {
 
 user = new APIConnection();
 
+// poker-library.js
+
+class Card {
+    constructor(rank, suit) {
+        this.rank = rank;
+        this.suit = suit;
+    }
+
+    toString() {
+        return `${this.rank}${this.suit}`;
+    }
+}
+
+class Deck {
+    constructor() {
+        this.reset();
+    }
+
+    reset() {
+        const ranks = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A'];
+        const suits = ['♥', '♦', '♣', '♠'];
+        this.cards = [];
+        
+        for (let suit of suits) {
+            for (let rank of ranks) {
+                this.cards.push(new Card(rank, suit));
+            }
+        }
+    }
+
+    shuffle() {
+        for (let i = this.cards.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [this.cards[i], this.cards[j]] = [this.cards[j], this.cards[i]];
+        }
+    }
+
+    draw() {
+        if (this.cards.length === 0) return null;
+        return this.cards.pop();
+    }
+}
+
+class PokerGame {
+    constructor(numPlayers) {
+        this.deck = new Deck();
+        this.numPlayers = numPlayers;
+        this.players = Array(numPlayers).fill().map(() => ({ hand: [] }));
+        this.communityCards = [];
+        this.reset();
+    }
+
+    reset() {
+        this.deck = new Deck();
+        this.deck.shuffle();
+        this.players.forEach(player => player.hand = []);
+        this.communityCards = [];
+    }
+
+    dealHands() {
+        // Deal two cards to each player
+        for (let i = 0; i < 2; i++) {
+            for (let player of this.players) {
+                player.hand.push(this.deck.draw());
+            }
+        }
+    }
+
+    dealFlop() {
+        // Burn one card and deal three cards
+        this.deck.draw(); // burn
+        for (let i = 0; i < 3; i++) {
+            this.communityCards.push(this.deck.draw());
+        }
+    }
+
+    dealTurn() {
+        // Burn one card and deal one card
+        this.deck.draw(); // burn
+        this.communityCards.push(this.deck.draw());
+    }
+
+    dealRiver() {
+        // Burn one card and deal one card
+        this.deck.draw(); // burn
+        this.communityCards.push(this.deck.draw());
+    }
+
+    getHandRank(cards) {
+        const allCards = [...cards];
+        const ranks = allCards.map(card => card.rank);
+        const suits = allCards.map(card => card.suit);
+        
+        // Convert face cards to numerical values
+        const valueMap = { 'T': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14 };
+        const numericalRanks = ranks.map(rank => valueMap[rank] || parseInt(rank));
+        
+        // Check for flush
+        const isFlush = suits.every(suit => suit === suits[0]);
+        
+        // Check for straight
+        const uniqueRanks = [...new Set(numericalRanks)].sort((a, b) => a - b);
+        let isStraight = false;
+        if (uniqueRanks.length >= 5) {
+            for (let i = 0; i <= uniqueRanks.length - 5; i++) {
+                if (uniqueRanks[i + 4] - uniqueRanks[i] === 4) {
+                    isStraight = true;
+                    break;
+                }
+            }
+        }
+
+        // Count frequencies of each rank
+        const rankFreq = {};
+        numericalRanks.forEach(rank => {
+            rankFreq[rank] = (rankFreq[rank] || 0) + 1;
+        });
+        
+        const frequencies = Object.values(rankFreq).sort((a, b) => b - a);
+        const ranks_arr = Object.entries(rankFreq).sort((a, b) => b[1] - a[1] || b[0] - a[0]);
+
+        // Determine hand rank
+        if (isFlush && isStraight) return { rank: 8, name: 'Straight Flush' }; // Straight Flush
+        if (frequencies[0] === 4) return { rank: 7, name: 'Four of a Kind' }; // Four of a Kind
+        if (frequencies[0] === 3 && frequencies[1] === 2) return { rank: 6, name: 'Full House' }; // Full House
+        if (isFlush) return { rank: 5, name: 'Flush' }; // Flush
+        if (isStraight) return { rank: 4, name: 'Straight' }; // Straight
+        if (frequencies[0] === 3) return { rank: 3, name: 'Three of a Kind' }; // Three of a Kind
+        if (frequencies[0] === 2 && frequencies[1] === 2) return { rank: 2, name: 'Two Pair' }; // Two Pair
+        if (frequencies[0] === 2) return { rank: 1, name: 'One Pair' }; // One Pair
+        return { rank: 0, name: 'High Card' }; // High Card
+    }
+
+    determineWinner() {
+        const playerHands = this.players.map((player, index) => {
+            const allCards = [...player.hand, ...this.communityCards];
+            const handRank = this.getHandRank(allCards);
+            return {
+                playerIndex: index,
+                hand: player.hand,
+                handRank: handRank
+            };
+        });
+
+        // Sort by hand rank (higher is better)
+        playerHands.sort((a, b) => b.handRank.rank - a.handRank.rank);
+
+        return {
+            winningPlayer: playerHands[0].playerIndex,
+            winningHand: playerHands[0].handRank.name,
+            allHands: playerHands
+        };
+    }
+
+    calculateOdds() {
+        const remainingCards = [...this.deck.cards];
+        const iterations = 1000; // Monte Carlo simulation iterations
+        const wins = Array(this.numPlayers).fill(0);
+
+        for (let i = 0; i < iterations; i++) {
+            // Create a copy of the current game state
+            const simulatedCommunityCards = [...this.communityCards];
+            const remainingCardsCopy = [...remainingCards];
+
+            // Complete the community cards if needed
+            while (simulatedCommunityCards.length < 5) {
+                const randomIndex = Math.floor(Math.random() * remainingCardsCopy.length);
+                simulatedCommunityCards.push(remainingCardsCopy[randomIndex]);
+                remainingCardsCopy.splice(randomIndex, 1);
+            }
+
+            // Determine winner for this simulation
+            const winner = this.determineWinner();
+            wins[winner.winningPlayer]++;
+        }
+
+        // Calculate odds for each player
+        return this.players.map((_, index) => ({
+            playerIndex: index,
+            winningOdds: (wins[index] / iterations * 100).toFixed(2) + '%'
+        }));
+    }
+}
+
+// Example usage:
+/*
+const game = new PokerGame(4); // Create a game with 4 players
+game.dealHands();              // Deal initial hands
+game.dealFlop();              // Deal the flop
+game.dealTurn();              // Deal the turn
+game.dealRiver();             // Deal the river
+
+const winner = game.determineWinner();
+console.log(`Player ${winner.winningPlayer} wins with ${winner.winningHand}`);
+
+const odds = game.calculateOdds();
+console.log('Current winning odds:', odds);
+*/
+
   </script>
   </body>
 </html>
