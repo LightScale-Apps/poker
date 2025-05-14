@@ -13,8 +13,9 @@ public class ChatHub : Hub
         await Clients.All.SendAsync("PlayerList", playerCount + " Players: " + playerList);
     }
 
-    public async Task JoinRoom(string playerName) {
-        await Groups.AddToGroupAsync(Context.ConnectionId, "game");
+    public async Task JoinRoom() {
+        Context.Items.Add("name", "ryanb");
+        await Clients.Caller.SendAsync("Response", Context.Items["name"]);
     }
 
 
