@@ -26,7 +26,7 @@ public class PokerGameService
     }
 
     public void AddPlayer(string connectionId, string username) {
-        var repeatPlayer = _players.FirstOrDefault(p => p.ConnectionId == connectionId);
+        var repeatPlayer = _players.Any(p => p.ConnectionId == connectionId);
 
         if (repeatPlayer) _players.RemoveAll(p => p.ConnectionId == connectionId);
         
