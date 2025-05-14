@@ -233,169 +233,160 @@
     <div id="playerInfo" class="player-info text-white p-6 rounded-xl w-[600px] text-center space-y-2"></div>
 
     <script>
-        const suits = {
-            '♠': { symbol: '♠', color: 'black', name: 'spades' },
-            '♥': { symbol: '♥', color: 'red', name: 'hearts' },
-            '♦': { symbol: '♦', color: 'red', name: 'diamonds' },
-            '♣': { symbol: '♣', color: 'black', name: 'clubs' }
-        };
-        const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
-        let deck = [];
-        let communityCards = [];
-        let players = [];
-        let currentPhase = 0;
+const suits = {
+    'S': { symbol: '♠', color: 'black', name: 'spades' },
+    'H': { symbol: '♥', color: 'red', name: 'hearts' },
+    'D': { symbol: '♦', color: 'red', name: 'diamonds' },
+    'C': { symbol: '♣', color: 'black', name: 'clubs' }
+};
+const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+let deck = [];
+function createDeck() {
+    for (s in ['S', 'H', 'D', 'C']) {
+        for (v in values) deck.push({value: v, suit: s})
+    }
+}
+createDeck();
 
-        function createCard(value, suit) {
-            const card = document.createElement('div');
-            card.className = 'playing-card';
+let communityCards = [];
+let players = [];
+let currentPhase = 0;
 
-            const inner = document.createElement('div');
-            inner.className = 'playing-card-inner';
+function createCard(value, suitString) {
+    let suit = suits[suitString].symbol;
 
-            const front = document.createElement('div');
-            front.className = `card-face card-front ${suits[suit].color}`;
 
-            // Add corners
-            const topLeftCorner = document.createElement('div');
-            topLeftCorner.className = 'card-corner top-left';
-            topLeftCorner.innerHTML = `
-                <div class="corner-value">${value}</div>
-                <div class="corner-suit">${suit}</div>
-            `;
+    const card = document.createElement('div');
+    card.className = 'playing-card';
 
-            const bottomRightCorner = document.createElement('div');
-            bottomRightCorner.className = 'card-corner bottom-right';
-            bottomRightCorner.innerHTML = `
-                <div class="corner-value">${value}</div>
-                <div class="corner-suit">${suit}</div>
-            `;
+    const inner = document.createElement('div');
+    inner.className = 'playing-card-inner';
 
-            // Add center suit
-            const centerSuit = document.createElement('div');
-            centerSuit.className = 'card-suit';
-            centerSuit.textContent = suit;
+    const front = document.createElement('div');
+    front.className = `card-face card-front ${suits[suit].color}`;
 
-            front.appendChild(topLeftCorner);
-            front.appendChild(bottomRightCorner);
-            front.appendChild(centerSuit);
+    // Add corners
+    const topLeftCorner = document.createElement('div');
+    topLeftCorner.className = 'card-corner top-left';
+    topLeftCorner.innerHTML = `
+        <div class="corner-value">${value}</div>
+        <div class="corner-suit">${suit}</div>
+    `;
 
-            const back = document.createElement('div');
-            back.className = 'card-face card-back';
+    const bottomRightCorner = document.createElement('div');
+    bottomRightCorner.className = 'card-corner bottom-right';
+    bottomRightCorner.innerHTML = `
+        <div class="corner-value">${value}</div>
+        <div class="corner-suit">${suit}</div>
+    `;
 
-            inner.appendChild(front);
-            inner.appendChild(back);
-            card.appendChild(inner);
+    // Add center suit
+    const centerSuit = document.createElement('div');
+    centerSuit.className = 'card-suit';
+    centerSuit.textContent = suit;
 
-            return card;
+    front.appendChild(topLeftCorner);
+    front.appendChild(bottomRightCorner);
+    front.appendChild(centerSuit);
+
+    const back = document.createElement('div');
+    back.className = 'card-face card-back';
+
+    inner.appendChild(front);
+    inner.appendChild(back);
+    card.appendChild(inner);
+
+    return card;
+}
+
+function shuffle(iterations) {
+    for (let _ = iterations; _ > 0; _--) {
+        for (let i = deck.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [deck[i], deck[j]] = [deck[j], deck[i]];
         }
+    }
+}
 
-        function createDeck() {
-            deck = [];
-            for (let suit in suits) {
-                for (let value of values) {
-                    deck.push({ value, suit });
-                }
-            }
+function cardToString(card) {
+    return `${card.value}${suits[card.suit].symbol}`;
+}
+
+function displayPlayerHands() {
+    console.log('Current hands:');
+    players.forEach((player, i) => {
+        console.log(`Player ${i + 1}: ${player.cards.map(cardToString).join(' ')}`);
+    });
+}
+
+function setPlayers() {
+    const count = parseInt(document.getElementById('playerCount').value);
+    if (count < 2 || count > 12) {
+        alert('Please enter a number between 2 and 8');
+        return;
+    }
+    players = Array(count).fill().map(() => ({ cards: [] }));
+    deal();
+}
+
+function deal() {
+    createDeck();
+    shuffle(7);
+    communityCards = [];
+    currentPhase = 0;
+    
+    document.getElementById('communityCards').innerHTML = '';
+    
+    players.forEach(player => {
+        player.cards = [deck.pop(), deck.pop()];
+    });
+
+    displayPlayerHands();
+    
+    gsap.from("#playerInfo div", {
+        y: 20,
+        opacity: 0,
+        duration: 0.5,
+        stagger: 0.1,
+        ease: "power2.out"
+    });
+}
+
+function nextCard() {
+    if (currentPhase === 0) {
+        for (let i = 0; i < 3; i++) {
+            communityCards.push(deck.pop());
         }
+        currentPhase = 1;
+    } else if (currentPhase < 3) {
+        communityCards.push(deck.pop());
+        currentPhase++;
+    } else {
+        deal();
+        return;
+    }
 
-        function shuffle() {
-            for (let i = deck.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [deck[i], deck[j]] = [deck[j], deck[i]];
-            }
-        }
+    const communityContainer = document.getElementById('communityCards');
+    communityContainer.innerHTML = '';
+    
+    communityCards.forEach((card, index) => {
+        const cardElement = createCard(card.value, card.suit);
+        cardElement.style.animationDelay = `${index * 0.1}s`;
+        communityContainer.appendChild(cardElement);
+    });
 
-        function cardToString(card) {
-            const suitMap = {
-                '♠': 'S',
-                '♥': 'H',
-                '♦': 'D',
-                '♣': 'C'
-            };
-            return `${card.value}${suitMap[card.suit]}`;
-        }
+    gsap.from(".playing-card", {
+        y: -50,
+        opacity: 0,
+        duration: 0.5,
+        stagger: 0.1,
+        ease: "back.out(1.7)"
+    });
 
-        function displayPlayerHands() {
-            const playerInfo = document.getElementById('playerInfo');
-            playerInfo.innerHTML = players.map((player, i) => {
-                const cards = player.cards.map(cardToString).join(' ');
-                return `<div class="text-lg">Player ${i + 1}: ${cards}</div>`;
-            }).join('');
+    console.log('Community cards:', communityCards.map(cardToString).join(' '));
+}
 
-            console.log('Current hands:');
-            players.forEach((player, i) => {
-                console.log(`Player ${i + 1}: ${player.cards.map(cardToString).join(' ')}`);
-            });
-        }
-
-        function setPlayers() {
-            const count = parseInt(document.getElementById('playerCount').value);
-            if (count < 2 || count > 8) {
-                alert('Please enter a number between 2 and 8');
-                return;
-            }
-            players = Array(count).fill().map(() => ({ cards: [] }));
-            deal();
-        }
-
-        function deal() {
-            createDeck();
-            shuffle();
-            communityCards = [];
-            currentPhase = 0;
-            
-            document.getElementById('communityCards').innerHTML = '';
-            
-            players.forEach(player => {
-                player.cards = [deck.pop(), deck.pop()];
-            });
-
-            displayPlayerHands();
-            
-            gsap.from("#playerInfo div", {
-                y: 20,
-                opacity: 0,
-                duration: 0.5,
-                stagger: 0.1,
-                ease: "power2.out"
-            });
-        }
-
-        function nextCard() {
-            if (currentPhase === 0) {
-                for (let i = 0; i < 3; i++) {
-                    communityCards.push(deck.pop());
-                }
-                currentPhase = 1;
-            } else if (currentPhase < 3) {
-                communityCards.push(deck.pop());
-                currentPhase++;
-            } else {
-                deal();
-                return;
-            }
-
-            const communityContainer = document.getElementById('communityCards');
-            communityContainer.innerHTML = '';
-            
-            communityCards.forEach((card, index) => {
-                const cardElement = createCard(card.value, card.suit);
-                cardElement.style.animationDelay = `${index * 0.1}s`;
-                communityContainer.appendChild(cardElement);
-            });
-
-            gsap.from(".playing-card", {
-                y: -50,
-                opacity: 0,
-                duration: 0.5,
-                stagger: 0.1,
-                ease: "back.out(1.7)"
-            });
-
-            console.log('Community cards:', communityCards.map(cardToString).join(' '));
-        }
-
-        setPlayers();
+setPlayers();
     </script>
 </body>
 </html>
