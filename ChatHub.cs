@@ -5,33 +5,20 @@ public class ChatHub : Hub
 
     public string playerList = "";
     public int playerCount = 0;
-    public async Task SendMessage(string message) {
-        await Clients.All.SendAsync("ReceiveMessage", "You said: " + message);
-    }
 
     public async Task JoinPlayer(string name) {
         playerList += ", " + name;
         playerCount += 1;
-
         await Clients.All.SendAsync("PlayerList", playerCount + " Players: " + playerList);
     }
 
-    public async Task CreateLobby(string lobby) {
-        await Clients.All.SendAsync("LobbyCreated", "Join Code: " + lobby);
-    }
-
-    public async Task FindPlayers() {
-        await Clients.Caller.SendAsync("PlayerList", playerCount + " Players: " + playerList);
-    }
 
     //clients:
-    //logon and provide a name
-    //receive cards and display
+    //display cards when given by server
 
     //host:
-    //count all the players and list them
-    //deal and shuffle cards
-    //win detection
-    //determine dealer
+    //during river figure out who the players are
+    //once hole cards are dealt, those players are locked in for that hand (no one else can join)
+    //shuffle/deal cards and send out to players
 
 }
