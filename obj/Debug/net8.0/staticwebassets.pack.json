@@ -13,6 +13,10 @@
       "PackagePath": "staticwebassets/favicon.ico"
     },
     {
+      "Id": "/home/user/Desktop/poker/wwwroot/ipad.html",
+      "PackagePath": "staticwebassets/ipad.html"
+    },
+    {
       "Id": "/home/user/Desktop/poker/wwwroot/js/site.js",
       "PackagePath": "staticwebassets/js/site.js"
     },
