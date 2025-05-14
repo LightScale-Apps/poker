@@ -64,9 +64,12 @@ public class PokerGameService
         // Deal 2 cards to each player
         foreach (var player in _players) {
             player.Cards = Draw(2);
-        }
-
-        _communityCards.Add(Draw(5));
+        }        
+_communityCards.Add(Draw(1));
+_communityCards.Add(Draw(1));
+_communityCards.Add(Draw(1));
+_communityCards.Add(Draw(1));
+_communityCards.Add(Draw(1));
     }
     private void ShuffleDeck()
     {
