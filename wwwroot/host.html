@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poker Game Host</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .container {
+            background-color: #f0f0f0;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #communityCards, #playerList {
+            margin-top: 10px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Poker Game Host</h1>
+    
+    <div class="container">
+        <h2>Game Controls</h2>
+        <button onclick="dealCards()">Deal New Hand</button>
+        <button onclick="nextCards()">Next Cards</button>
+    </div>
+
+    <div class="container">
+        <h2>Community Cards</h2>
+        <div id="communityCards">No cards dealt yet</div>
+    </div>
+
+    <div class="container">
+        <h2>Connected Players</h2>
+        <div id="playerList">No players connected</div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/pokerhub")
+            .withAutomaticReconnect()
+            .build();
+
+        let communityCards = [];
+
+        connection.on("PlayerJoined", (username) => {
+            getPlayerList();
+        });
+
+        connection.on("PlayerLeft", (username) => {
+            getPlayerList();
+        });
+
+        connection.on("PlayerList", (playerList) => {
+            document.getElementById("playerList").textContent = playerList.join(", ");
+        });
+
+        connection.on("NewCommunityCards", (newCards) => {
+            communityCards = [...communityCards, ...newCards];
+            document.getElementById("communityCards").textContent = 
+                communityCards.map(card => `${card.value} of ${card.suit}`).join(", ");
+        });
+
+        connection.on("GameStarted", () => {
+            communityCards = [];
+            document.getElementById("communityCards").textContent = "No cards dealt yet";
+        });
+
+        async function startConnection() {
+            try {
+                await connection.start();
+                console.log("Connected to hub");
+                getPlayerList();
+            } catch (err) {
+                console.error(err);
+                setTimeout(startConnection, 5000);
+            }
+        }
+
+        async function dealCards() {
+            try {
+                await connection.invoke("DealCards");
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function nextCards() {
+            try {
+                await connection.invoke("NextCards");
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function getPlayerList() {
+            try {
+                await connection.invoke("ListPlayers");
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        startConnection();
+    </script>
+</body>
+</html>

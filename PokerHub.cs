@@ -67,10 +67,8 @@ public class PokerHub : Hub
         var players = _gameService.GetPlayers();
         var disconnectedPlayer = players.FirstOrDefault(p => p.ConnectionId == Context.ConnectionId);
         
-        if (disconnectedPlayer != null)
-        {
+        if (disconnectedPlayer != null) {
             _gameService.RemovePlayer(Context.ConnectionId);
-            await Clients.All.SendAsync("PlayerLeft", disconnectedPlayer.Username);
             await SendPlayerList();
         }
 
