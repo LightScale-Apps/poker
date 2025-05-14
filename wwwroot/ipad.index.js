@@ -4,6 +4,7 @@ const suits = {
   D: { symbol: "♦", color: "red", name: "diamonds" },
   C: { symbol: "♣", color: "black", name: "clubs" },
 };
+
 const values = [
   "2",
   "3",
