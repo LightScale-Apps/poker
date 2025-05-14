@@ -12,8 +12,11 @@ public class PokerHub : Hub
 
     public async Task JoinPlayer(string username)
     {
+        var existingPlayer = await Context.FirstOrDefault((p) => p.ConnectionId == Context.ConnectionId);
+        if (existingPlayer != null) await _gameService.RemovePlayer(Context.ConnectionId);
+
+
         _gameService.AddPlayer(Context.ConnectionId, username);
-        await Clients.All.SendAsync("PlayerJoined", username);
         await SendPlayerList();
     }
 

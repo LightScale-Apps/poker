@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.SignalR;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSignalR();
