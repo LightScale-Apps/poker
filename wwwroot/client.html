@@ -84,6 +84,9 @@
             }
         }
 
+        connection.on("HoleCards", (res) => {
+            alert("You're Hole Cards Are: " + res)
+        });
         startConnection();
     </script>
 </body>

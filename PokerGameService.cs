@@ -40,13 +40,11 @@ public class PokerGameService
 
     public List<Player> GetPlayers() => _players;
 
-    public void DealCards()
-    {
+    public void DealCards() {
         // Reset the game state
         InitializeDeck();
         _communityCards.Clear();
-        foreach (var player in _players)
-        {
+        foreach (var player in _players) {
             player.Cards.Clear();
         }
 
@@ -54,8 +52,7 @@ public class PokerGameService
         ShuffleDeck();
 
         // Deal 2 cards to each player
-        foreach (var player in _players)
-        {
+        foreach (var player in _players) {
             for (int i = 0; i < 2; i++)
             {
                 var card = _deck[0];
@@ -63,35 +60,12 @@ public class PokerGameService
                 player.Cards.Add(card);
             }
         }
-    }
-
-    public List<Card> DealNextCommunityCards()
-    {
-        List<Card> newCards = new();
-
-        // Flop (first 3 cards)
-        if (_communityCards.Count == 0)
-        {
-            for (int i = 0; i < 3; i++)
-            {
-                var card = _deck[0];
-                _deck.RemoveAt(0);
-                _communityCards.Add(card);
-                newCards.Add(card);
-            }
+        
+        for (int i = 0; i < 4; i++) {
+            _communityCards.Add(_deck[0]);
+            _deck.RemoveAt(0)
         }
-        // Turn or River (1 card each)
-        else if (_communityCards.Count < 5)
-        {
-            var card = _deck[0];
-            _deck.RemoveAt(0);
-            _communityCards.Add(card);
-            newCards.Add(card);
-        }
-
-        return newCards;
     }
-
     private void ShuffleDeck()
     {
         int n = _deck.Count;
