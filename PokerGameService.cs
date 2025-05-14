@@ -66,7 +66,7 @@ public class PokerGameService
             player.Cards = Draw(2);
         }
 
-        _communityCards = Draw(5);
+        _communityCards.Add(Draw(5));
     }
     private void ShuffleDeck()
     {
