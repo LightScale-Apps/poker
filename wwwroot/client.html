@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle at center, #1a472a 0%, #0a2315 100%);
+            gap: 40px;
+            touch-action: manipulation;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            overflow: hidden;
+        }
+
+        .table-texture {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23104724' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        .spotlight {
+            position: absolute;
+            width: 150%;
+            height: 150%;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.1) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .card {
+            width: 240px;
+            height: 336px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .card-back {
+            background: white;
+            background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23aa2222' fill-opacity='0.9' fill-rule='evenodd'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E");
+            border: 8px solid white;
+        }
+
+        .card-front {
+            background: white;
+            transform: rotateY(180deg);
+            border: 8px solid white;
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            padding: 15px;
+        }
+
+        .card-corner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 2.5em;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .card-corner.top-left {
+            grid-row: 1;
+            justify-self: start;
+        }
+
+        .card-corner.bottom-right {
+            grid-row: 3;
+            justify-self: end;
+            transform: rotate(180deg);
+        }
+
+        .card-center {
+            grid-row: 2;
+            font-size: 8em;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hearts, .diamonds {
+            color: #e32322;
+        }
+
+        .clubs, .spades {
+            color: #1a1a1a;
+        }
+
+        .card-suit {
+            font-size: 0.5em;
+            line-height: 1;
+        }
+
+        .press-indicator {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.6);
+            font-family: Arial, sans-serif;
+            font-size: 1.2em;
+            opacity: 1;
+            transition: opacity 0.3s;
+        }
+
+        .press-indicator.hidden {
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="table-texture"></div>
+    <div class="spotlight"></div>
+    <div class="card">
+        <div class="card-face card-back"></div>
+        <div class="card-face card-front"></div>
+    </div>
+    <div class="card">
+        <div class="card-face card-back"></div>
+        <div class="card-face card-front"></div>
+    </div>
+    <div class="press-indicator">Long press to reveal cards</div>
+
+    <script>
+        function displayCards(card1, card2) {
+            const cards = [card1, card2];
+            const frontFaces = document.querySelectorAll('.card-front');
+            
+            cards.forEach((card, index) => {
+                const value = card.slice(0, -1);
+                const suit = card.slice(-1);
+                
+                let displayValue = value;
+                let suitSymbol = '';
+                
+                switch(value) {
+                    case 'K': displayValue = 'K'; break;
+                    case 'Q': displayValue = 'Q'; break;
+                    case 'J': displayValue = 'J'; break;
+                    case 'T': displayValue = '10'; break;
+                    case 'A': displayValue = 'A'; break;
+                }
+                
+                switch(suit) {
+                    case 'H': 
+                        suitSymbol = '♥';
+                        frontFaces[index].classList.add('hearts');
+                        break;
+                    case 'D': 
+                        suitSymbol = '♦';
+                        frontFaces[index].classList.add('diamonds');
+                        break;
+                    case 'C': 
+                        suitSymbol = '♣';
+                        frontFaces[index].classList.add('clubs');
+                        break;
+                    case 'S': 
+                        suitSymbol = '♠';
+                        frontFaces[index].classList.add('spades');
+                        break;
+                }
+
+                frontFaces[index].innerHTML = `
+                    <div class="card-corner top-left">
+                        <div>${displayValue}</div>
+                        <div class="card-suit">${suitSymbol}</div>
+                    </div>
+                    <div class="card-center">${suitSymbol}</div>
+                    <div class="card-corner bottom-right">
+                        <div>${displayValue}</div>
+                        <div class="card-suit">${suitSymbol}</div>
+                    </div>
+                `;
+            });
+        }
+
+        let pressTimer;
+        const cards = document.querySelectorAll('.card');
+        const indicator = document.querySelector('.press-indicator');
+        const PRESS_DURATION = 500; // 1 second
+
+        function showCards() {
+            cards.forEach(card => card.classList.add('flipped'));
+            indicator.classList.add('hidden');
+        }
+
+        function hideCards() {
+            cards.forEach(card => card.classList.remove('flipped'));
+            indicator.classList.remove('hidden');
+        }
+
+        // Handle mouse events
+        document.addEventListener('mousedown', (e) => {
+            pressTimer = setTimeout(showCards, PRESS_DURATION);
+        });
+
+        document.addEventListener('mouseup', (e) => {
+            clearTimeout(pressTimer);
+            hideCards();
+        });
+
+        // Handle touch events
+        document.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Prevent default touch behaviors
+            pressTimer = setTimeout(showCards, PRESS_DURATION);
+        });
+
+        document.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            clearTimeout(pressTimer);
+            hideCards();
+        });
+
+        // Cancel the timer if the user moves their finger/mouse
+        document.addEventListener('mouseleave', () => {
+            clearTimeout(pressTimer);
+            hideCards();
+        });
+
+        document.addEventListener('touchcancel', () => {
+            clearTimeout(pressTimer);
+            hideCards();
+        });
+
+        // Example usage - you can change these values to display different cards
+        displayCards('AS', 'KH');
+    </script>
+</body>
+</html>

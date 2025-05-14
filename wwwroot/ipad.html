@@ -1,113 +1,297 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
         body {
-            font-family: monospace;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background: #2c7744;
-            color: white;
             min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-        }
-
-        .controls {
-            margin: 20px 0;
-        }
-
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            background: #1a4b2b;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            margin: 0 5px;
-        }
-
-        button:hover {
-            background: #153d23;
+            background: radial-gradient(circle at center, #1a472a 0%, #0a2615 100%);
+            font-family: 'Inter', sans-serif;
         }
 
         .table {
-            background: #236136;
-            padding: 20px;
-            border-radius: 200px;
-            margin: 20px 0;
-            min-width: 600px;
-            min-height: 200px;
+            background: radial-gradient(ellipse at center, #2a653f 0%, #1a472a 100%);
+            box-shadow: 
+                0 0 100px rgba(0,0,0,0.3),
+                inset 0 0 60px rgba(0,0,0,0.3);
+        }
+
+        .playing-card {
+            width: 100px;
+            height: 140px;
+            position: relative;
+            perspective: 1000px;
+            margin: 5px;
+        }
+
+        .playing-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+
+        .playing-card:hover .playing-card-inner {
+            transform: translateY(-5px) rotateY(10deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .card-front {
+            background: white;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            font-size: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-back {
+            background: linear-gradient(45deg, #1a4b2c 25%, #2d6a4f 25%, #2d6a4f 50%, #1a4b2c 50%, #1a4b2c 75%, #2d6a4f 75%);
+            background-size: 20px 20px;
+            border: 8px solid white;
+            transform: rotateY(180deg);
+        }
+
+        .button-primary {
+            background: linear-gradient(145deg, #2d6a4f 0%, #1b4332 100%);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .button-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.2);
+        }
+
+        .button-primary:active {
+            transform: translateY(1px);
+        }
+
+        .player-info {
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        input[type="number"] {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        input[type="number"]:focus {
+            background: rgba(255,255,255,0.15);
+            border-color: rgba(255,255,255,0.3);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(255,255,255,0.1);
+        }
+
+        .card-value {
+            position: absolute;
+            font-size: 30px;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .card-value.top {
+            top: 10px;
+            left: 10px;
+        }
+
+        .card-value.bottom {
+            bottom: 10px;
+            right: 10px;
+            transform: rotate(180deg);
+        }
+
+        .card-suit {
+            font-size: 60px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .card-suits {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+
+        .red {
+            color: #e53e3e;
+        }
+
+        .black {
+            color: #2d3748;
+        }
+
+        @keyframes cardEntrance {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .community-cards {
             display: flex;
             gap: 10px;
-            margin: 20px 0;
+            padding: 20px;
         }
 
-        .card {
-            width: 60px;
-            height: 90px;
-            background: white;
-            border-radius: 5px;
+        /* Card pip layouts */
+        .pip {
+            position: absolute;
+            font-size: 20px;
+        }
+
+        .card-inner-layout {
+            position: absolute;
+            width: 100%;
+            height: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 24px;
-            color: black;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
-        .card.red {
-            color: red;
-        }
-
-        #playerCount {
+        /* Decorative card corners */
+        .card-corner {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             padding: 5px;
-            font-size: 16px;
-            width: 60px;
-            margin-right: 10px;
         }
 
-        .player-info {
-            font-family: monospace;
-            margin: 10px 0;
+        .card-corner.top-left {
+            top: 0;
+            left: 0;
+        }
+
+        .card-corner.bottom-right {
+            bottom: 0;
+            right: 0;
+            transform: rotate(180deg);
+        }
+
+        .corner-value {
             font-size: 16px;
+            font-weight: bold;
+        }
+
+        .corner-suit {
+            font-size: 14px;
         }
     </style>
 </head>
-<body>
-    <div class="controls">
-        <input type="number" id="playerCount" min="2" max="8" value="2">
-        <button onclick="setPlayers()">Set Players</button>
-        <button onclick="deal()">Deal New Hand</button>
-        <button onclick="nextCard()">Next Card</button>
+<body class="flex flex-col items-center p-8">
+    <div class="controls space-x-4 mb-8">
+        <input type="number" 
+               id="playerCount" 
+               min="2" 
+               max="8" 
+               value="2" 
+               class="w-20 px-3 py-2 rounded-lg text-center">
+        <button onclick="setPlayers()" 
+                class="button-primary px-6 py-2 rounded-lg text-white font-semibold">
+            Set Players
+        </button>
+        <button onclick="deal()" 
+                class="button-primary px-6 py-2 rounded-lg text-white font-semibold">
+            Deal New Hand
+        </button>
+        <button onclick="nextCard()" 
+                class="button-primary px-6 py-2 rounded-lg text-white font-semibold">
+            Next Card
+        </button>
     </div>
 
-    <div class="table">
+    <div class="table rounded-[100px] p-12 w-[800px] h-[400px] flex flex-col items-center justify-center mb-8">
         <div class="community-cards" id="communityCards"></div>
     </div>
 
-    <div id="playerInfo" class="player-info"></div>
+    <div id="playerInfo" class="player-info text-white p-6 rounded-xl w-[600px] text-center space-y-2"></div>
 
     <script>
-        const suits = ['♠', '♥', '♦', '♣'];
+        const suits = {
+            '♠': { symbol: '♠', color: 'black', name: 'spades' },
+            '♥': { symbol: '♥', color: 'red', name: 'hearts' },
+            '♦': { symbol: '♦', color: 'red', name: 'diamonds' },
+            '♣': { symbol: '♣', color: 'black', name: 'clubs' }
+        };
         const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
         let deck = [];
         let communityCards = [];
         let players = [];
-        let currentPhase = 0; // 0: pre-flop, 1: flop, 2: turn, 3: river
+        let currentPhase = 0;
+
+        function createCard(value, suit) {
+            const card = document.createElement('div');
+            card.className = 'playing-card';
+
+            const inner = document.createElement('div');
+            inner.className = 'playing-card-inner';
+
+            const front = document.createElement('div');
+            front.className = `card-face card-front ${suits[suit].color}`;
+
+            // Add corners
+            const topLeftCorner = document.createElement('div');
+            topLeftCorner.className = 'card-corner top-left';
+            topLeftCorner.innerHTML = `
+                <div class="corner-value">${value}</div>
+                <div class="corner-suit">${suit}</div>
+            `;
+
+            const bottomRightCorner = document.createElement('div');
+            bottomRightCorner.className = 'card-corner bottom-right';
+            bottomRightCorner.innerHTML = `
+                <div class="corner-value">${value}</div>
+                <div class="corner-suit">${suit}</div>
+            `;
+
+            // Add center suit
+            const centerSuit = document.createElement('div');
+            centerSuit.className = 'card-suit';
+            centerSuit.textContent = suit;
+
+            front.appendChild(topLeftCorner);
+            front.appendChild(bottomRightCorner);
+            front.appendChild(centerSuit);
+
+            const back = document.createElement('div');
+            back.className = 'card-face card-back';
+
+            inner.appendChild(front);
+            inner.appendChild(back);
+            card.appendChild(inner);
+
+            return card;
+        }
 
         function createDeck() {
             deck = [];
-            for (let suit of suits) {
+            for (let suit in suits) {
                 for (let value of values) {
                     deck.push({ value, suit });
                 }
@@ -131,24 +315,13 @@
             return `${card.value}${suitMap[card.suit]}`;
         }
 
-        function createCardElement(card) {
-            const cardDiv = document.createElement('div');
-            cardDiv.className = 'card';
-            if (card.suit === '♥' || card.suit === '♦') {
-                cardDiv.classList.add('red');
-            }
-            cardDiv.textContent = card.value + card.suit;
-            return cardDiv;
-        }
-
         function displayPlayerHands() {
             const playerInfo = document.getElementById('playerInfo');
             playerInfo.innerHTML = players.map((player, i) => {
                 const cards = player.cards.map(cardToString).join(' ');
-                return `Player ${i + 1}: ${cards}`;
-            }).join('<br>');
+                return `<div class="text-lg">Player ${i + 1}: ${cards}</div>`;
+            }).join('');
 
-            // Log to console
             console.log('Current hands:');
             players.forEach((player, i) => {
                 console.log(`Player ${i + 1}: ${player.cards.map(cardToString).join(' ')}`);
@@ -171,45 +344,57 @@
             communityCards = [];
             currentPhase = 0;
             
-            // Clear community cards
             document.getElementById('communityCards').innerHTML = '';
             
-            // Deal to players
             players.forEach(player => {
                 player.cards = [deck.pop(), deck.pop()];
             });
 
             displayPlayerHands();
+            
+            gsap.from("#playerInfo div", {
+                y: 20,
+                opacity: 0,
+                duration: 0.5,
+                stagger: 0.1,
+                ease: "power2.out"
+            });
         }
 
         function nextCard() {
             if (currentPhase === 0) {
-                // Flop
                 for (let i = 0; i < 3; i++) {
                     communityCards.push(deck.pop());
                 }
                 currentPhase = 1;
             } else if (currentPhase < 3) {
-                // Turn and River
                 communityCards.push(deck.pop());
                 currentPhase++;
             } else {
-                // Reset and deal new hand
                 deal();
                 return;
             }
 
             const communityContainer = document.getElementById('communityCards');
             communityContainer.innerHTML = '';
-            communityCards.forEach(card => {
-                communityContainer.appendChild(createCardElement(card));
+            
+            communityCards.forEach((card, index) => {
+                const cardElement = createCard(card.value, card.suit);
+                cardElement.style.animationDelay = `${index * 0.1}s`;
+                communityContainer.appendChild(cardElement);
             });
 
-            // Log community cards to console
+            gsap.from(".playing-card", {
+                y: -50,
+                opacity: 0,
+                duration: 0.5,
+                stagger: 0.1,
+                ease: "back.out(1.7)"
+            });
+
             console.log('Community cards:', communityCards.map(cardToString).join(' '));
         }
 
-        // Initialize with 2 players
         setPlayers();
     </script>
 </body>

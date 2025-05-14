@@ -5,6 +5,10 @@
       "PackagePath": "staticwebassets/PokerApp.bundle.scp.css"
     },
     {
+      "Id": "/home/user/Desktop/poker/wwwroot/client.html",
+      "PackagePath": "staticwebassets/client.html"
+    },
+    {
       "Id": "/home/user/Desktop/poker/wwwroot/css/site.css",
       "PackagePath": "staticwebassets/css/site.css"
     },
