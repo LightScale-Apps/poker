@@ -26,11 +26,11 @@ function sr() {
     li.textContent = `${modelResponse}`;
     document.getElementById("messagesList").appendChild(li);
   });
+}
 
-  function send() {
-    const str = document.getElementById("messageInput").value;
-    user.chatConnection.invoke("SendMessage", str)
-  }
+function send() {
+  const str = document.getElementById("messageInput").value;
+  user.chatConnection.invoke("SendMessage", str)
 }
 
 class APIConnection {
