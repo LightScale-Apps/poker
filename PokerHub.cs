@@ -23,7 +23,7 @@ public class PokerHub : Hub
 
     public async Task StartGame() {
         _gameService.DealCards();
-        var allPlayers = _gameService.GetPlayers()
+        var allPlayers = _gameService.GetPlayers();
         foreach (var p in allPlayers) {
             await Clients.Client(p.ConnectionId).SendAsync("HoleCards", p.Cards);
         }

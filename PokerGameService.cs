@@ -60,10 +60,10 @@ public class PokerGameService
                 player.Cards.Add(card);
             }
         }
-        
+
         for (int i = 0; i < 4; i++) {
             _communityCards.Add(_deck[0]);
-            _deck.RemoveAt(0)
+            _deck.RemoveAt(0);
         }
     }
     private void ShuffleDeck()
