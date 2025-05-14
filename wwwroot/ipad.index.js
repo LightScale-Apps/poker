@@ -1,8 +1,8 @@
 const suits = {
-  S: { symbol: "♠", color: "black", name: "spades" },
-  H: { symbol: "♥", color: "red", name: "hearts" },
-  D: { symbol: "♦", color: "red", name: "diamonds" },
-  C: { symbol: "♣", color: "black", name: "clubs" },
+  S: { symbol: "\u2660", color: "black", name: "spades" },
+  H: { symbol: "\u2665", color: "red", name: "hearts" },
+  D: { symbol: "\u2666", color: "red", name: "diamonds" },
+  C: { symbol: "\u2663", color: "black", name: "clubs" },
 };
 
 const values = [
@@ -20,20 +20,21 @@ const values = [
   "K",
   "A",
 ];
+
 let deck = [];
+let communityCards = [];
+let players = [];
+let currentPhase = 0;
+
 function createDeck() {
-  for (v in values) {
+  deck = [];
+  for (v of values) {
     deck.push({ value: v, suit: "S" });
     deck.push({ value: v, suit: "H" });
     deck.push({ value: v, suit: "D" });
     deck.push({ value: v, suit: "C" });
   }
 }
-createDeck();
-
-let communityCards = [];
-let players = [];
-let currentPhase = 0;
 
 function createCard(value, suitString) {
   let suit = suits[suitString].symbol;
@@ -126,14 +127,6 @@ function deal() {
   });
 
   displayPlayerHands();
-
-  gsap.from("#playerInfo div", {
-    y: 20,
-    opacity: 0,
-    duration: 0.5,
-    stagger: 0.1,
-    ease: "power2.out",
-  });
 }
 
 function nextCard() {
@@ -157,14 +150,6 @@ function nextCard() {
     const cardElement = createCard(card.value, card.suit);
     cardElement.style.animationDelay = `${index * 0.1}s`;
     communityContainer.appendChild(cardElement);
-  });
-
-  gsap.from(".playing-card", {
-    y: -50,
-    opacity: 0,
-    duration: 0.5,
-    stagger: 0.1,
-    ease: "back.out(1.7)",
   });
 
   console.log("Community cards:", communityCards.map(cardToString).join(" "));
