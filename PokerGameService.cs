@@ -2,39 +2,27 @@ public class PokerGameService
 {
     private readonly List<Player> _players = new();
     private readonly List<Card> _deck = new();
-    private readonly List<Card> _communityCards = new();
+    private List<Card> _communityCards = new();
     private readonly Random _random = new();
 
-    public PokerGameService()
-    {
-        InitializeDeck();
-    }
-
-    private void InitializeDeck()
-    {
+    public PokerGameService() => InitializeDeck();
+    private void InitializeDeck() {
         _deck.Clear();
-        var suits = new[] { "Hearts", "Diamonds", "Clubs", "Spades" };
         var values = new[] { "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A" };
-
-        foreach (var suit in suits)
-        {
-            foreach (var value in values)
-            {
-                _deck.Add(new Card { Suit = suit, Value = value });
-            }
+        foreach (var value in values) {
+            _deck.Add(new Card { Suit = "H", Value = value });
+            _deck.Add(new Card { Suit = "D", Value = value });
+            _deck.Add(new Card { Suit = "C", Value = value });
+            _deck.Add(new Card { Suit = "S", Value = value });
         }
     }
 
-    public void AddPlayer(string connectionId, string username) {
-        var repeatPlayer = _players.Any(p => p.ConnectionId == connectionId);
-
-        if (repeatPlayer) _players.RemoveAll(p => p.ConnectionId == connectionId);
-        
-        _players.Add(new Player { ConnectionId = connectionId, Username = username });
+    public void AddPlayer(string id, string name) {
+        _players.RemoveAll(p => p.ConnectionId == id);
+        _players.Add(new Player { ConnectionId = id, Username = name });
     }
 
-    public void RemovePlayer(string connectionId)
-    {
+    public void RemovePlayer(string connectionId) {
         _players.RemoveAll(p => p.ConnectionId == connectionId);
     }
 
@@ -64,12 +52,9 @@ public class PokerGameService
         // Deal 2 cards to each player
         foreach (var player in _players) {
             player.Cards = Draw(2);
-        }        
-_communityCards.Add(Draw(1)[0]);
-_communityCards.Add(Draw(1)[0]);
-_communityCards.Add(Draw(1)[0]);
-_communityCards.Add(Draw(1)[0]);
-_communityCards.Add(Draw(1)[0]);
+        }
+
+        _communityCards = Draw(5); 
     }
     private void ShuffleDeck()
     {
