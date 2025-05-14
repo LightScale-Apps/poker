@@ -44,7 +44,7 @@ function createCard(value, suitString) {
   inner.className = "playing-card-inner";
 
   const front = document.createElement("div");
-  front.className = `card-face card-front ${suits[suit].color}`;
+  front.className = `card-face card-front ${suits[suitString].color}`;
 
   // Add corners
   const topLeftCorner = document.createElement("div");
