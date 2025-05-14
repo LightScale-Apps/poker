@@ -1,10 +1,11 @@
 using Microsoft.AspNetCore.SignalR;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSignalR();
 builder.Services.AddRazorPages();
-builder.Services.AddSingleton<IGameService, GameService>();
+builder.Services.AddSingleton<PokerGameService>();
 
 var app = builder.Build();
 
@@ -25,6 +26,6 @@ app.UseAuthorization();
 
 app.MapRazorPages();
 
-app.MapHub<ChatHub>("/game");
+app.MapHub<PokerHub>("/pokerhub");
 
 app.Run();

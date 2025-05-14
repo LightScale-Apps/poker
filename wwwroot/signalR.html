@@ -1,240 +1,229 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-  
-  </head>
-
-  <body>
-    <br><h1>message input</h1>
-    <input type="text" id="messageInput" />
-    <button onclick="send()">Send Message</button>
-    <br><br>
-
-    <h1>MESSAGES BELOW</h1>
-    <button onclick="sr()">configure</button>
-    <ul id="messagesList"></ul>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.0/signalr.min.js"></script>
-    <script type="text/javascript">
-
-function sr() {
-  user.chatConnection.start();
-
-  user.chatConnection.on("ReceiveMessage", (modelResponse) => {
-    let li = document.createElement("li");
-    li.textContent = `${modelResponse}`;
-    document.getElementById("messagesList").appendChild(li);
-  });
-}
-
-function send() {
-  const str = document.getElementById("messageInput").value;
-  user.chatConnection.invoke("SendMessage", str)
-}
-
-class APIConnection {
-  constructor() {
-    this.URL = "http://192.168.68.116:3141/";
-    this.authorized = false;
-    this.data = {};
-    this.chatConnection = new signalR.HubConnectionBuilder().withUrl("/game").build();
-  }
-
-  async game(input) {
-
-    if (this.chatConnection.state !== "Connected") {
-      await this.chatConnection.start();
-    }
-    return this.chatConnection.invoke("SendMessage", input);
-
-  }
-}
-
-user = new APIConnection();
-
-// poker-library.js
-
-class Card {
-    constructor(rank, suit) {
-        this.rank = rank;
-        this.suit = suit;
-    }
-
-    toString() {
-        return `${this.rank}${this.suit}`;
-    }
-}
-
-class Deck {
-    constructor() {
-        this.reset();
-    }
-
-    reset() {
-        const ranks = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A'];
-        const suits = ['♥', '♦', '♣', '♠'];
-        this.cards = [];
-        
-        for (let suit of suits) {
-            for (let rank of ranks) {
-                this.cards.push(new Card(rank, suit));
-            }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poker Game Client</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 20px;
         }
-    }
-
-    shuffle() {
-        for (let i = this.cards.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [this.cards[i], this.cards[j]] = [this.cards[j], this.cards[i]];
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
         }
-    }
-
-    draw() {
-        if (this.cards.length === 0) return null;
-        return this.cards.pop();
-    }
-}
-
-class PokerGame {
-    constructor(numPlayers) {
-        this.deck = new Deck();
-        this.numPlayers = numPlayers;
-        this.players = Array(numPlayers).fill().map(() => ({ hand: [] }));
-        this.communityCards = [];
-        this.reset();
-    }
-
-    reset() {
-        this.deck = new Deck();
-        this.deck.shuffle();
-        this.players.forEach(player => player.hand = []);
-        this.communityCards = [];
-    }
-
-    dealHands() {
-        // Deal two cards to each player
-        for (let i = 0; i < 2; i++) {
-            for (let player of this.players) {
-                player.hand.push(this.deck.draw());
-            }
+        .connected {
+            background-color: #dff0d8;
+            color: #3c763d;
         }
-    }
-
-    dealFlop() {
-        // Burn one card and deal three cards
-        this.deck.draw(); // burn
-        for (let i = 0; i < 3; i++) {
-            this.communityCards.push(this.deck.draw());
+        .disconnected {
+            background-color: #f2dede;
+            color: #a94442;
         }
-    }
+        .card-display {
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        .controls {
+            margin: 20px 0;
+        }
+        button {
+            padding: 8px 15px;
+            margin: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #e9ecef;
+        }
+        input {
+            padding: 8px;
+            margin: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        #gameLog {
+            height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-top: 20px;
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <h1>Poker Game Client</h1>
+    
+    <div id="connectionStatus" class="status disconnected">Disconnected</div>
+    
+    <div class="controls">
+        <div>
+            <input type="text" id="username" placeholder="Enter username">
+            <button onclick="joinGameClick()">Join Game</button>
+        </div>
+        <div>
+            <button onclick="dealCards()">Deal Cards</button>
+            <button onclick="nextCards()">Next Cards</button>
+            <button onclick="getPlayerList()">List Players</button>
+        </div>
+    </div>
 
-    dealTurn() {
-        // Burn one card and deal one card
-        this.deck.draw(); // burn
-        this.communityCards.push(this.deck.draw());
-    }
+    <div class="card-display">
+        <h3>Your Cards:</h3>
+        <div id="playerCards">No cards dealt yet</div>
+    </div>
 
-    dealRiver() {
-        // Burn one card and deal one card
-        this.deck.draw(); // burn
-        this.communityCards.push(this.deck.draw());
-    }
+    <div class="card-display">
+        <h3>Community Cards:</h3>
+        <div id="communityCardsDisplay">No community cards yet</div>
+    </div>
 
-    getHandRank(cards) {
-        const allCards = [...cards];
-        const ranks = allCards.map(card => card.rank);
-        const suits = allCards.map(card => card.suit);
-        
-        // Convert face cards to numerical values
-        const valueMap = { 'T': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14 };
-        const numericalRanks = ranks.map(rank => valueMap[rank] || parseInt(rank));
-        
-        // Check for flush
-        const isFlush = suits.every(suit => suit === suits[0]);
-        
-        // Check for straight
-        const uniqueRanks = [...new Set(numericalRanks)].sort((a, b) => a - b);
-        let isStraight = false;
-        if (uniqueRanks.length >= 5) {
-            for (let i = 0; i <= uniqueRanks.length - 5; i++) {
-                if (uniqueRanks[i + 4] - uniqueRanks[i] === 4) {
-                    isStraight = true;
-                    break;
-                }
+    <div class="card-display">
+        <h3>Players:</h3>
+        <div id="playerList">No players yet</div>
+    </div>
+
+    <div>
+        <h3>Game Log:</h3>
+        <div id="gameLog"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+    <script>
+        // Initialize the connection
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/pokerhub")
+            .withAutomaticReconnect()
+            .build();
+
+        // Store game state
+        let myCards = [];
+        let communityCards = [];
+        let players = [];
+
+        function updateGameLog(message) {
+            const gameLog = document.getElementById('gameLog');
+            const logEntry = document.createElement('div');
+            logEntry.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+            gameLog.appendChild(logEntry);
+            gameLog.scrollTop = gameLog.scrollHeight;
+        }
+
+        // Connect to the hub
+        async function startConnection() {
+            try {
+                await connection.start();
+                console.log("Connected to SignalR Hub!");
+                const statusElement = document.getElementById("connectionStatus");
+                statusElement.textContent = "Connected";
+                statusElement.className = "status connected";
+                updateGameLog("Connected to server");
+            } catch (err) {
+                console.error(err);
+                const statusElement = document.getElementById("connectionStatus");
+                statusElement.textContent = "Connection failed";
+                statusElement.className = "status disconnected";
+                updateGameLog("Connection failed - retrying in 5 seconds");
+                setTimeout(startConnection, 5000);
             }
         }
 
-        // Count frequencies of each rank
-        const rankFreq = {};
-        numericalRanks.forEach(rank => {
-            rankFreq[rank] = (rankFreq[rank] || 0) + 1;
-        });
-        
-        const frequencies = Object.values(rankFreq).sort((a, b) => b - a);
-        const ranks_arr = Object.entries(rankFreq).sort((a, b) => b[1] - a[1] || b[0] - a[0]);
-
-        // Determine hand rank
-        if (isFlush && isStraight) return { rank: 8, name: 'Straight Flush' }; // Straight Flush
-        if (frequencies[0] === 4) return { rank: 7, name: 'Four of a Kind' }; // Four of a Kind
-        if (frequencies[0] === 3 && frequencies[1] === 2) return { rank: 6, name: 'Full House' }; // Full House
-        if (isFlush) return { rank: 5, name: 'Flush' }; // Flush
-        if (isStraight) return { rank: 4, name: 'Straight' }; // Straight
-        if (frequencies[0] === 3) return { rank: 3, name: 'Three of a Kind' }; // Three of a Kind
-        if (frequencies[0] === 2 && frequencies[1] === 2) return { rank: 2, name: 'Two Pair' }; // Two Pair
-        if (frequencies[0] === 2) return { rank: 1, name: 'One Pair' }; // One Pair
-        return { rank: 0, name: 'High Card' }; // High Card
-    }
-
-    determineWinner() {
-        const playerHands = this.players.map((player, index) => {
-            const allCards = [...player.hand, ...this.communityCards];
-            const handRank = this.getHandRank(allCards);
-            return {
-                playerIndex: index,
-                hand: player.hand,
-                handRank: handRank
-            };
+        // Register client-side methods that the hub can call
+        connection.on("PlayerJoined", (username) => {
+            updateGameLog(`${username} joined the game`);
         });
 
-        // Sort by hand rank (higher is better)
-        playerHands.sort((a, b) => b.handRank.rank - a.handRank.rank);
+        connection.on("PlayerLeft", (username) => {
+            updateGameLog(`${username} left the game`);
+        });
 
-        return {
-            winningPlayer: playerHands[0].playerIndex,
-            winningHand: playerHands[0].handRank.name,
-            allHands: playerHands
-        };
-    }
+        connection.on("ReceiveCards", (cards) => {
+            myCards = cards;
+            const cardsDisplay = cards.map(card => `${card.value} of ${card.suit}`).join(", ");
+            document.getElementById("playerCards").textContent = cardsDisplay;
+            updateGameLog("Received your cards");
+        });
 
-    calculateOdds() {
-        const remainingCards = [...this.deck.cards];
-        const iterations = 1000; // Monte Carlo simulation iterations
-        const wins = Array(this.numPlayers).fill(0);
+        connection.on("NewCommunityCards", (newCards) => {
+            communityCards = [...communityCards, ...newCards];
+            const cardsDisplay = communityCards.map(card => `${card.value} of ${card.suit}`).join(", ");
+            document.getElementById("communityCardsDisplay").textContent = cardsDisplay;
+            updateGameLog(`New community cards revealed: ${newCards.map(card => `${card.value} of ${card.suit}`).join(", ")}`);
+        });
 
-        for (let i = 0; i < iterations; i++) {
-            // Create a copy of the current game state
-            const simulatedCommunityCards = [...this.communityCards];
-            const remainingCardsCopy = [...remainingCards];
+        connection.on("GameStarted", () => {
+            communityCards = [];
+            document.getElementById("communityCardsDisplay").textContent = "No community cards yet";
+            updateGameLog("New game started!");
+        });
 
-            // Complete the community cards if needed
-            while (simulatedCommunityCards.length < 5) {
-                const randomIndex = Math.floor(Math.random() * remainingCardsCopy.length);
-                simulatedCommunityCards.push(remainingCardsCopy[randomIndex]);
-                remainingCardsCopy.splice(randomIndex, 1);
+        connection.on("RoundEnded", () => {
+            updateGameLog("Round ended!");
+        });
+
+        connection.on("PlayerList", (playerList) => {
+            players = playerList;
+            document.getElementById("playerList").textContent = players.join(", ");
+            updateGameLog("Player list updated");
+        });
+
+        // Example functions to call hub methods
+        async function joinGameClick() {
+            const username = document.getElementById("username").value.trim();
+            if (!username) {
+                alert("Please enter a username");
+                return;
             }
-
-            // Determine winner for this simulation
-            const winner = this.determineWinner();
-            wins[winner.winningPlayer]++;
+            try {
+                await connection.invoke("JoinPlayer", username);
+                updateGameLog("Successfully joined the game");
+            } catch (err) {
+                console.error(err);
+                updateGameLog("Error joining game");
+            }
         }
 
-        // Calculate odds for each player
-        return this.players.map((_, index) => ({
-            playerIndex: index,
-            winningOdds: (wins[index] / iterations * 100).toFixed(2) + '%'
-        }));
-    }
-}
-  </script>
-  </body>
+        async function dealCards() {
+            try {
+                await connection.invoke("DealCards");
+                updateGameLog("Cards dealt");
+            } catch (err) {
+                console.error(err);
+                updateGameLog("Error dealing cards");
+            }
+        }
+
+        async function nextCards() {
+            try {
+                await connection.invoke("NextCards");
+                updateGameLog("Next cards requested");
+            } catch (err) {
+                console.error(err);
+                updateGameLog("Error requesting next cards");
+            }
+        }
+
+        async function getPlayerList() {
+            try {
+                await connection.invoke("ListPlayers");
+                updateGameLog("Player list requested");
+            } catch (err) {
+                console.error(err);
+                updateGameLog("Error getting player list");
+            }
+        }
+
+        // Start the connection when the page loads
+        startConnection();
+    </script>
+</body>
 </html>
