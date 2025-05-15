@@ -1,81 +1,44 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="viewport" content="height=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/inter/3.19.3/inter.css" rel="stylesheet">
     <style>
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            width: 100vw;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
             background: #1a472a;
-            touch-action: manipulation;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            user-select: none;
-            overflow: hidden;
-            font-family: 'Inter', sans-serif;
-            position: fixed;
-        }
-
-        .rotation-message {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-size: 1.2em;
-            text-align: center;
-            width: 80%;
-            z-index: 1000;
-        }
-
-        @media screen and (orientation: portrait) {
-            .rotation-message {
-                display: block;
-            }
-            .content {
-                display: none;
-            }
-        }
-
-        .content {
+            min-height: 100vh;
+            /* Ensure body fills at least the viewport height */
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 20px;
+            overflow: hidden;
+            position: fixed;
             width: 100%;
             height: 100%;
         }
 
         .cards-container {
             display: flex;
-            gap: min(4vw, 30px);
             justify-content: center;
-            align-items: center;
-            height: 70vh;
+            gap: 12px;
+            /* Reduced gap between cards */
         }
 
         .card {
-            height: 100%;
-            aspect-ratio: 2.5/3.5;
+            width: 120px;
+            /* Fixed width that works well in landscape */
+            height: 168px;
+            /* Maintaining 7:10 ratio */
             position: relative;
             transform-style: preserve-3d;
             transition: transform 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
         }
 
         .card.flipped {
@@ -87,26 +50,25 @@
             width: 100%;
             height: 100%;
             backface-visibility: hidden;
-            border-radius: min(2vw, 12px);
+            border-radius: 8px;
             display: flex;
             justify-content: center;
             align-items: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
 
         .card-back {
             background: white;
             background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23aa2222' fill-opacity='0.9' fill-rule='evenodd'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E");
-            border: min(1.5vw, 8px) solid white;
+            border: 4px solid white;
         }
 
         .card-front {
             background: white;
             transform: rotateY(180deg);
-            border: min(1.5vw, 8px) solid white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: min(15vw, 8em);
+            border: 4px solid white;
+            font-size: 3.5em;
+            /* Reduced font size */
         }
 
         .hearts, .diamonds {
@@ -118,18 +80,19 @@
         }
 
         .username-input {
+            position: absolute;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
             background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
             color: white;
-            padding: 12px 20px;
-            font-size: min(4vw, 1.1em);
-            width: min(40vw, 200px);
+            padding: 8px 12px;
+            font-size: 14px;
+            width: 140px;
             text-align: center;
-            transition: all 0.3s ease;
             outline: none;
-            position: fixed;
-            bottom: min(4vh, 20px);
         }
 
         .username-input:focus {
@@ -141,31 +104,41 @@
             color: rgba(255, 255, 255, 0.4);
         }
 
-        /* Prevent scrolling and bouncing on iOS */
-        html, body {
-            position: fixed;
-            overflow: hidden;
-            overscroll-behavior: none;
+        @media (orientation: portrait) {
+            .rotation-prompt {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: #1a472a;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-size: 16px;
+                z-index: 1000;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="rotation-message">
+    <div class="rotation-prompt" style="display: none;">
         Please rotate your device sideways
     </div>
-    <div class="content">
-        <div class="cards-container">
-            <div class="card">
-                <div class="card-face card-back"></div>
-                <div class="card-face card-front"></div>
-            </div>
-            <div class="card">
-                <div class="card-face card-back"></div>
-                <div class="card-face card-front"></div>
-            </div>
+    
+    <div class="cards-container">
+        <div class="card">
+            <div class="card-face card-back"></div>
+            <div class="card-face card-front"></div>
         </div>
-        <input type="text" class="username-input" placeholder="Username" maxlength="20" autocomplete="off">
+        <div class="card">
+            <div class="card-face card-back"></div>
+            <div class="card-face card-front"></div>
+        </div>
     </div>
+    
+    <input type="text" class="username-input" placeholder="Username" maxlength="20" autocomplete="off">
 
     <script>
         function displayCards(card1, card2) {
@@ -202,6 +175,7 @@
         let pressTimer;
         const cards = document.querySelectorAll('.card');
         const PRESS_DURATION = 400;
+        const rotationPrompt = document.querySelector('.rotation-prompt');
 
         function showCards() {
             cards.forEach(card => card.classList.add('flipped'));
@@ -211,7 +185,33 @@
             cards.forEach(card => card.classList.remove('flipped'));
         }
 
-        // Handle mouse events
+        function checkOrientation() {
+            if (window.innerWidth < window.innerHeight) {
+                rotationPrompt.style.display = 'flex';
+            } else {
+                rotationPrompt.style.display = 'none';
+            }
+        }
+
+        // Check orientation on load and resize
+        window.addEventListener('load', checkOrientation);
+        window.addEventListener('resize', checkOrientation);
+
+        // Handle touch events
+        document.addEventListener('touchstart', (e) => {
+            if (e.target.classList.contains('username-input')) return;
+            e.preventDefault();
+            pressTimer = setTimeout(showCards, PRESS_DURATION);
+        }, { passive: false });
+
+        document.addEventListener('touchend', (e) => {
+            if (e.target.classList.contains('username-input')) return;
+            e.preventDefault();
+            clearTimeout(pressTimer);
+            hideCards();
+        }, { passive: false });
+
+        // Handle mouse events (for testing)
         document.addEventListener('mousedown', (e) => {
             if (e.target.classList.contains('username-input')) return;
             pressTimer = setTimeout(showCards, PRESS_DURATION);
@@ -223,45 +223,19 @@
             hideCards();
         });
 
-        // Handle touch events
-        document.addEventListener('touchstart', (e) => {
-            if (e.target.classList.contains('username-input')) return;
-            e.preventDefault();
-            pressTimer = setTimeout(showCards, PRESS_DURATION);
-        });
+        // Cancel reveal if touch/mouse leaves
+        document.addEventListener('touchcancel', hideCards);
+        document.addEventListener('mouseleave', hideCards);
 
-        document.addEventListener('touchend', (e) => {
-            if (e.target.classList.contains('username-input')) return;
-            e.preventDefault();
-            clearTimeout(pressTimer);
-            hideCards();
-        });
-
-        // Cancel the timer if the user moves their finger/mouse
-        document.addEventListener('mouseleave', () => {
-            clearTimeout(pressTimer);
-            hideCards();
-        });
-
-        document.addEventListener('touchcancel', () => {
-            clearTimeout(pressTimer);
-            hideCards();
-        });
-
-        // Prevent default touch behaviors
+        // Prevent unwanted touch behaviors
         document.addEventListener('touchmove', (e) => {
-            e.preventDefault();
+            if (!e.target.classList.contains('username-input')) {
+                e.preventDefault();
+            }
         }, { passive: false });
 
-        // Example usage
+        // Initialize cards
         displayCards('AS', 'KH');
-
-        // Lock screen orientation to landscape if supported
-        if (screen.orientation && screen.orientation.lock) {
-            screen.orientation.lock('landscape').catch(() => {
-                // Silently fail if orientation lock is not supported or permitted
-            });
-        }
     </script>
 </body>
 </html>
