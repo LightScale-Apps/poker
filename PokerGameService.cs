@@ -64,10 +64,11 @@ public class PokerGameService {
         foreach (var p in _players) p.Cards = Draw(2);
         _communityCards = Draw(5); 
     }
-    public List<String> GetCommunityCards() {
-        var List<String> ret = new();
-        foreach (var card in _communityCards) ret.Add(card.ToString());
-        return ret;
+    public List<string> GetCommunityCards() {
+        var List<string> returnList = new();
+        foreach (var card in _communityCards) returnList.Add(card.ToString());
+
+        return returnList;
     }
     private void ShuffleDeck(int iterations) {
         int _i = 0;
