@@ -70,5 +70,11 @@ public class PokerGameService
     }
 
     public bool IsGameInProgress() => _communityCards.Any() || _players.Any(p => p.Cards.Any());
-    public List<Card> GetCommunityCards() => _communityCards;
+    public List<String> GetCommunityCards() {
+        var ret = new List<String>();
+        foreach (var c in _communityCards) {
+            ret.Add(" " + c.Value + c.Suit + " ");
+        }
+        return ret;
+    }
 }
