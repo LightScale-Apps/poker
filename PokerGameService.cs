@@ -1,9 +1,17 @@
-public class PokerGameService
-{
-    private readonly List<Player> _players = new();
-    private readonly List<Card> _deck = new();
+public class Card {
+    public string Suit { get; set; } = "";
+    public string Value { get; set; } = "";
+}
+public class Player {
+    public string ConnectionId { get; set; } = "";
+    public string Username { get; set; } = "";
+    public List<Card> Cards { get; set; } = new();
+}
+public class PokerGameService {
+    private List<Player> _players = new();
+    private List<Card> _deck = new();
     private List<Card> _communityCards = new();
-    private readonly Random _random = new();
+    private Random _random = new();
 
     public PokerGameService() => InitializeDeck();
     private void InitializeDeck() {
@@ -39,42 +47,30 @@ public class PokerGameService
         return hand;
     }
 
-    public void DealCards() {
-        // Reset the game state
+    public void ResetGame() {
         InitializeDeck();
         _communityCards.Clear();
-        foreach (var player in _players) {
-            player.Cards.Clear();
-        }
-        // Shuffle deck
-        ShuffleDeck();
+        foreach (var player in _players) player.Cards.Clear();
+    }
 
-        // Deal 2 cards to each player
-        foreach (var player in _players) {
-            player.Cards = Draw(2);
-        }
+    public void DealCards() {
+        ResetGame();
+        ShuffleDeck(10);
 
+        foreach (var p in _players) p.Cards = Draw(2);
         _communityCards = Draw(5); 
     }
-    private void ShuffleDeck()
-    {
-        int n = _deck.Count;
-        while (n > 1)
-        {
-            n--;
-            int k = _random.Next(n + 1);
-            Card temp = _deck[k];
-            _deck[k] = _deck[n];
-            _deck[n] = temp;
+    private void ShuffleDeck(int iterations) {
+        int _i = 0;
+        while (_i < iterations) {
+            for (int n = _deck.Count - 1; n > 0; n--) {
+                int k = _random.Next(n); //pick random index k between 0 and n
+                Card temp = _deck[k];
+                _deck[k] = _deck[n]
+                _deck[n] = temp;
+                //swap the card at k and n
+            }
+            _i++;
         }
-    }
-
-    public bool IsGameInProgress() => _communityCards.Any() || _players.Any(p => p.Cards.Any());
-    public List<String> GetCommunityCards() {
-        var ret = new List<String>();
-        foreach (var c in _communityCards) {
-            ret.Add(" " + c.Value + c.Suit + " ");
-        }
-        return ret;
     }
 }
