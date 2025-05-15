@@ -85,7 +85,7 @@
         }
 
         connection.on("HoleCards", (res) => {
-            alert("You're Hole Cards Are: " + res)
+            document.getElementById("myCards").innerHTML = res;
         });
         startConnection();
     </script>
