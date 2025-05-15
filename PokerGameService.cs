@@ -1,6 +1,10 @@
 public class Card {
     public string Suit { get; set; } = "";
     public string Value { get; set; } = "";
+
+    public string ToString() {
+        return this.Value + this.Suit;
+    }
 }
 public class Player {
     public string ConnectionId { get; set; } = "";
@@ -60,7 +64,11 @@ public class PokerGameService {
         foreach (var p in _players) p.Cards = Draw(2);
         _communityCards = Draw(5); 
     }
-    public List<Card> GetCommunityCards() => _communityCards;
+    public List<String> GetCommunityCards() {
+        var List<String> ret = new();
+        foreach (var card in _communityCards) ret.Add(card.ToString());
+        return ret;
+    }
     private void ShuffleDeck(int iterations) {
         int _i = 0;
         while (_i < iterations) {
