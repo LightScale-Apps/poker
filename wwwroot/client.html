@@ -43,7 +43,6 @@
     <div class="container">
         <div class="login">
             <input type="text" id="username" placeholder="Enter username">
-            <button onclick="joinGame()">Join Game</button>
         </div>
     </div>
 
@@ -69,24 +68,15 @@
             }
         }
 
-        async function joinGame() {
-            const username = document.getElementById("username").value.trim();
-            if (!username) {
-                alert("Please enter a username");
-                return;
-            }
-            
-            try {
-                await connection.invoke("JoinPlayer", username);
-            } catch (err) {
-                console.error(err);
-                alert("Error joining game");
-            }
-        }
-
         connection.on("HoleCards", (res) => {
             document.getElementById("myCards").innerHTML = res;
         });
+        document.getElementById("username").addEventListener("oninput", (e) => {
+            const username = document.getElementById("username").value.trim();
+            if (!username) return;
+            connection.invoke("JoinPlayer", username);
+        });
+
         startConnection();
     </script>
 </body>
