@@ -25,7 +25,7 @@ public class PokerHub : Hub
         _gameService.DealCards();
         var allPlayers = _gameService.GetPlayers();
         foreach (var p in allPlayers) {
-            var cardString = " " + c.Value + c.Suit + " ";
+            var cardString = p.Cards[0].Value + p.Cards[0].Suit + "|" + p.Cards[1].Value + p.Cards[1].Suit;
             await Clients.Client(p.ConnectionId).SendAsync("HoleCards", cardString);
         }
         await Clients.Caller.SendAsync("CommunityCards", _gameService.GetCommunityCards());
