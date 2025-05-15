@@ -4,37 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Poker Game Host</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 600px;
-            margin: 20px auto;
-            padding: 20px;
-        }
-        .container {
-            background-color: #f0f0f0;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-        button {
-            padding: 10px 20px;
-            margin: 5px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        #communityCards, #playerList {
-            margin-top: 10px;
-            font-size: 18px;
-        }
-    </style>
+    <link rel="stylesheet" src="index.css" />
 </head>
 <body>
     <h1>Poker Game Host</h1>
     
     <div class="container">
-        <h2>Game Controls</h2>
-        <button onclick="dealCards()">Deal New Hand</button>
+        <button onclick="dealCards()">Deal Hand</button>
     </div>
 
     <div class="container">
@@ -48,38 +24,6 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
-    <script>
-        const connection = new signalR.HubConnectionBuilder()
-            .withUrl("/pokerhub")
-            .withAutomaticReconnect()
-            .build();
-
-        let communityCards = [];
-
-        connection.on("PlayerList", (playerList) => {
-            document.getElementById("playerList").textContent = playerList.join(", ");
-        });
-
-        connection.on("CommunityCards", (commCards) => {
-            document.getElementById("communityCards").textContent = commCards.join(", ");
-        })
-
-        async function startConnection() {
-            try {
-                await connection.start();
-                console.log("Connected to hub");
-                await connection.invoke("ListPlayers");
-            } catch (err) {
-                console.error(err);
-                setTimeout(startConnection, 5000);
-            }
-        }
-
-        function dealCards() {
-            connection.invoke("StartGame")
-        }
-
-        startConnection();
-    </script>
+    <script src="host.js" type="text/javascript"></script>
 </body>
 </html>
