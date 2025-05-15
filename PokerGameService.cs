@@ -2,7 +2,7 @@ public class Card {
     public string Suit { get; set; } = "";
     public string Value { get; set; } = "";
 
-    public string ToString() {
+    public override string ToString() {
         return this.Value + this.Suit;
     }
 }
