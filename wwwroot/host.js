@@ -18,7 +18,7 @@ connection.on("PlayerList", (allPlayers) => {
 });
 
 connection.on("CommunityCards", (commCards) => {
-  document.getElementById("communityCards").textContent = commCards.join(", ");
+  document.getElementById("communityCards").textContent = commCards;
 });
 
 function START() {

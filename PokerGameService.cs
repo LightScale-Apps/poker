@@ -64,10 +64,9 @@ public class PokerGameService {
         foreach (var p in _players) p.Cards = Draw(2);
         _communityCards = Draw(5); 
     }
-    public List<string> GetCommunityCards() {
-        var List<string> returnList = new();
-        foreach (var card in _communityCards) returnList.Add(card.ToString());
-
+    public string GetCommunityCards() {
+        string returnString = "";
+        foreach (var card in _communityCards) returnString += card.ToString() + " , ";
         return returnList;
     }
     private void ShuffleDeck(int iterations) {
