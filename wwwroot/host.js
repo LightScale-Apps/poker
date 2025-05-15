@@ -5,7 +5,12 @@ const connection = new signalR.HubConnectionBuilder()
 var statusText = document.getElementById("status");
 
 connection.on("PlayerList", (playerList) => {
-  document.getElementById("playerList").textContent = playerList.join(", ");
+  for (let playerName of playerList) {
+    let li = document.createElement("li");
+    let txt = document.createTextNode(playerName);
+    li.appendChild(txt);
+    document.getElementById("playerList").appendChild(li);
+  }
   document.getElementById("playerNumber").textContent = playerList.length;
 });
 
