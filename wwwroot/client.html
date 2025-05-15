@@ -71,7 +71,7 @@
         connection.on("HoleCards", (res) => {
             document.getElementById("myCards").innerHTML = res;
         });
-        document.getElementById("username").addEventListener("oninput", (e) => {
+        document.getElementById("username").addEventListener("input", () => {
             const username = document.getElementById("username").value.trim();
             if (!username) return;
             connection.invoke("JoinPlayer", username);
