@@ -8,19 +8,17 @@
 </head>
 <body>
     <h1>Poker Game Host</h1>
+    <h5>Status: <span id="status"></span></h5>
     
     <div class="container">
-        <button onclick="dealCards()">Deal Hand</button>
+        <button onclick="START()">Deal Cards</button>
+        <h2>Connected Players (<span id="playerNumber"></span>)</h2>
+        <div id="playerList">No players connected</div>
     </div>
 
     <div class="container">
         <h2>Community Cards</h2>
         <div id="communityCards">No cards dealt yet</div>
-    </div>
-
-    <div class="container">
-        <h2>Connected Players</h2>
-        <div id="playerList">No players connected</div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>

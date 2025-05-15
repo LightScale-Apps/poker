@@ -2,22 +2,26 @@ const connection = new signalR.HubConnectionBuilder()
   .withUrl("/pokerhub")
   .withAutomaticReconnect()
   .build();
+var statusText = document.getElementById("status");
+var userText = document.getElementById("username");
+var holeCards = document.getElementById("myCards");
 
 connection.on("HoleCards", (res) => {
-  document.getElementById("myCards").innerHTML = res;
+  holeCards.innerHTML = res;
 });
-document.getElementById("username").addEventListener("input", () => {
-  const username = document.getElementById("username").value.trim();
+userText.addEventListener("input", () => {
+  const username = userText.value.trim();
   if (!username) return;
   connection.invoke("JoinPlayer", username);
 });
 
-(async function startConnection() {
+async function CONNECT() {
   try {
     await connection.start();
-    console.log("Connected to hub");
+    statusText.innerHTML = connection.state;
   } catch (err) {
-    console.error(err);
+    statusText.innerHTML = err + " | Trying again...";
     setTimeout(startConnection, 5000);
   }
-})();
+}
+CONNECT();
