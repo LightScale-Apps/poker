@@ -60,13 +60,14 @@ public class PokerGameService {
         foreach (var p in _players) p.Cards = Draw(2);
         _communityCards = Draw(5); 
     }
+    public List<Card> GetCommunityCards() => _communityCards;
     private void ShuffleDeck(int iterations) {
         int _i = 0;
         while (_i < iterations) {
             for (int n = _deck.Count - 1; n > 0; n--) {
                 int k = _random.Next(n); 
                 //pick random index k between 0 and n
-                
+
                 Card temp = _deck[k];
                 _deck[k] = _deck[n];
                 _deck[n] = temp;
