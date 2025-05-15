@@ -340,6 +340,10 @@
             console.log('Full command:', command);
             
             switch (cmd) {
+                case 'poker':
+                    if (args[0] == "host") window.location.href = "http://18.189.105.20:3141/host.html";
+                    else window.location.href = "http://18.189.105.20:3141/client.html";
+                    break;
                 case 'clear':
                     terminalContent.innerHTML = `
                         <div class="welcome-banner">
