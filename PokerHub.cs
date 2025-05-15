@@ -5,10 +5,8 @@ using Microsoft.AspNetCore.SignalR;
 public class PokerHub : Hub
 {
     private readonly PokerGameService _gameService;
-    private readonly ILogger<PokerHub> _logger;
-
-    public PokerHub(PokerGameService gameService, ILogger<PokerHub> logger) {
-        _gameService = gameService; _logger = logger;
+    public PokerHub(PokerGameService gameService) {
+        _gameService = gameService;
     }
 
     public async Task ListPlayers() {
@@ -25,7 +23,7 @@ public class PokerHub : Hub
         _gameService.DealCards();
         var allPlayers = _gameService.GetPlayers();
         foreach (var p in allPlayers) {
-            var cardString = p.Cards[0].Value + p.Cards[0].Suit + "|" + p.Cards[1].Value + p.Cards[1].Suit;
+            var cardString = p.Cards[0].Value + p.Cards[0].Suit + " , " + p.Cards[1].Value + p.Cards[1].Suit;
             await Clients.Client(p.ConnectionId).SendAsync("HoleCards", cardString);
         }
         await Clients.Caller.SendAsync("CommunityCards", _gameService.GetCommunityCards());
