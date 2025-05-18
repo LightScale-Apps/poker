@@ -6,7 +6,7 @@ var statusText = document.getElementById("status");
 var userText = document.getElementById("username");
 var holeCards = document.getElementById("myCards");
 
-connection.on("HoleCards", (res) => {
+connection.on("Hand", (res) => {
   holeCards.innerHTML = res;
 });
 userText.addEventListener("input", () => {
@@ -21,7 +21,7 @@ async function CONNECT() {
     statusText.innerHTML = connection.state;
   } catch (err) {
     statusText.innerHTML = err + " | Trying again...";
-    setTimeout(startConnection, 5000);
+    setTimeout(CONNECT, 5000);
   }
 }
 CONNECT();

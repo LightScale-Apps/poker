@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
+using Utils.cs;
 public class PokerHub : Hub
 {
     private readonly PokerGameService _gameService;
@@ -9,7 +11,22 @@ public class PokerHub : Hub
         _gameService = gameService;
     }
 
-    public async Task ListPlayers() {
+    public async Task NextCard() {
+        switch (_gameService.GetPhase()) {
+            case 0:
+                await Clients.All.SendAsync("CardsDealt", _gameService.Draw(3));
+                break;
+            case 1: case 2:
+                await Clients.All.SendAsync("CardsDealt", _gameService.Draw(1));
+                break;
+            default:
+                await ResetGame();
+                break;
+        }
+    }
+
+    public async Task ListPlayers()
+    {
         var players = _gameService.GetPlayers();
         await Clients.All.SendAsync("PlayerList", players.Select(p => p.Username).ToList());
     }
@@ -19,22 +36,20 @@ public class PokerHub : Hub
         await ListPlayers();
     }
 
-    public async Task StartGame() {
+    public async Task ResetGame() {
         _gameService.DealCards();
-        var allPlayers = _gameService.GetPlayers();
-        foreach (var p in allPlayers) {
-            var cardString = p.Cards[0].Value + p.Cards[0].Suit + " , " + p.Cards[1].Value + p.Cards[1].Suit;
-            await Clients.Client(p.ConnectionId).SendAsync("HoleCards", cardString);
+        foreach (var player in _gameService.GetPlayers()) {
+            await Clients.Client(player.ConnectionId).SendAsync("Hand", player.getHand());
         }
-        await Clients.Caller.SendAsync("CommunityCards", _gameService.GetCommunityCards());
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
         var players = _gameService.GetPlayers();
         var disconnectedPlayer = players.FirstOrDefault(p => p.ConnectionId == Context.ConnectionId);
-        
-        if (disconnectedPlayer != null) {
+
+        if (disconnectedPlayer != null)
+        {
             _gameService.RemovePlayer(Context.ConnectionId);
             await ListPlayers();
         }

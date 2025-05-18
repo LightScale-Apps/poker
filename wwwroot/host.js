@@ -5,6 +5,7 @@ const connection = new signalR.HubConnectionBuilder()
 var statusText = document.getElementById("status");
 var playerList = document.getElementById("playerList");
 var playerNum = document.getElementById("playerNumber");
+var table = document.getElementById("communityCards");
 
 connection.on("PlayerList", (allPlayers) => {
   playerList.innerHTML = "";
@@ -17,20 +18,18 @@ connection.on("PlayerList", (allPlayers) => {
   playerNum.textContent = allPlayers.length;
 });
 
-connection.on("CommunityCards", (commCards) => {
-  document.getElementById("communityCards").textContent = commCards;
+connection.on("CardsDealt", (cardList) => {
+  for (var card of cardList) {
+    table.textContent += card;
+  }
 });
-
-function START() {
-  connection.invoke("StartGame");
-}
 async function CONNECT() {
   try {
     await connection.start();
     statusText.innerHTML = connection.state;
   } catch (err) {
     statusText.innerHTML = err + " | Trying again...";
-    setTimeout(startConnection, 5000);
+    setTimeout(CONNECT, 5000);
   }
 }
 CONNECT();
