@@ -21,8 +21,7 @@ public class PokerHub : Hub
             case 0:
                 await Clients.All.SendAsync("CardsDealt", _gameService.Draw(3));
                 break;
-            case 1:
-            case 2:
+            case 1: case 2:
                 await Clients.All.SendAsync("CardsDealt", _gameService.Draw(1));
                 break;
             default:

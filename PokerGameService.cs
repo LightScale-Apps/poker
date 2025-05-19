@@ -2,12 +2,14 @@ using System.Data;
 using System.Numerics;
 using System.Transactions;
 using Utils.cs;
+using System.Linq;
+using System.Random;
 
 public class PokerGameService
 {
     private List<Player> _players = new();
-    private List<Card> _deck = new();
-    private Random _random = new();
+    private List<int> _deck = new();
+    private Random _rng = new Random();
     public int _phase = 0;
 
     public PokerGameService() => InitializeDeck();
@@ -15,15 +17,7 @@ public class PokerGameService
     public int GetPhase() => _phase++;
     private void InitializeDeck()
     {
-        _deck.Clear();
-        var values = new[] { "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A" };
-        foreach (var value in values)
-        {
-            _deck.Add(new Card { Suit = "H", Value = value });
-            _deck.Add(new Card { Suit = "D", Value = value });
-            _deck.Add(new Card { Suit = "C", Value = value });
-            _deck.Add(new Card { Suit = "S", Value = value });
-        }
+        _deck = Enumerable.Range(0, 64).ToList()
     }
 
     public void AddPlayer(string id, string name)
@@ -37,41 +31,29 @@ public class PokerGameService
         _players.RemoveAll(p => p.ConnectionId == connectionId);
     }
 
-    public List<Card> Draw(int cards)
+    public List<int> Draw(int cards)
     {
-        int i = cards;
-        var hand = new List<Card>();
-        while (i > 0)
-        {
+        var hand = new List<int>();
+        while (hand.Count < cards) {
             hand.Add(_deck[0]);
             _deck.RemoveAt(0);
-            i -= 1;
         }
         return hand;
     }
     public void DealCards()
     {
         InitializeDeck();
-        ShuffleDeck(10);
+        foreach (_ in Range(10)) ShuffleDeck();
         foreach (var p in _players) p.Cards = Draw(2);
         _phase = 0;
     }
-    private void ShuffleDeck(int iterations)
-    {
-        int _i = 0;
-        while (_i < iterations)
-        {
-            for (int n = _deck.Count - 1; n > 0; n--)
-            {
-                int k = _random.Next(n);
-                //pick random index k between 0 and n
+    private void ShuffleDeck() {
+        for (int n = _deck.Count - 1; n > 0; n--) {
+            int k = _random.Next(n);
 
-                Card temp = _deck[k];
-                _deck[k] = _deck[n];
-                _deck[n] = temp;
-                //swap the card at k and n
-            }
-            _i++;
+            int temp = _deck[k];
+            _deck[k] = _deck[n];
+            _deck[n] = temp;
         }
     }
 }
