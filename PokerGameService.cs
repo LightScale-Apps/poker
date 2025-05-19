@@ -8,10 +8,6 @@ public class PokerGameService
 {
     private List<Player> _players = new();
     private List<int> _deck = new();
-
-    private List<int> _flop = new();
-    private int _turn = 0
-    private int _river = 0;
     private Random _rng = new Random();
     public int _phase = 0;
 
