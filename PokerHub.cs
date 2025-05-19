@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.ObjectPool;
 using Utils.cs;
 public class PokerHub : Hub
 {
@@ -11,12 +12,17 @@ public class PokerHub : Hub
         _gameService = gameService;
     }
 
-    public async Task NextCard() {
-        switch (_gameService.GetPhase()) {
+    public async Task NextCard()
+    {
+        var p = _gameService.GetPhase();
+        Clients.All.SendAsync("GamePhase", p);
+        switch (p)
+        {
             case 0:
                 await Clients.All.SendAsync("CardsDealt", _gameService.Draw(3));
                 break;
-            case 1: case 2:
+            case 1:
+            case 2:
                 await Clients.All.SendAsync("CardsDealt", _gameService.Draw(1));
                 break;
             default:

@@ -14,6 +14,10 @@ userText.addEventListener("input", () => {
   if (!username) return;
   connection.invoke("JoinPlayer", username);
 });
+phaseText = document.getElementById("phase");
+connection.on("GamePhase", (p) => {
+  phaseText.innerText = p;
+});
 
 async function CONNECT() {
   try {
