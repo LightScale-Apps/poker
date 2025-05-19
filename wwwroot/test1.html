@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poker Hand</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: radial-gradient(
+                circle at center,
+                #2d9900 0%,
+                #267F00 60%,
+                #1b5900 100%
+            );
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .hand-container {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            transform: perspective(1000px) rotateX(20deg);
+        }
+
+        .card {
+            width: 140px;
+            height: 200px;
+            background-color: white;
+            border-radius: min(1.5vw, 15px);
+            position: absolute;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            transition: transform 0.3s ease;
+        }
+
+        .card::before,
+        .card::after {
+            position: absolute;
+            font-size: 24px;
+        }
+
+        .card::before {
+            top: 15px;
+            left: 15px;
+        }
+
+        .card::after {
+            bottom: 15px;
+            right: 15px;
+            transform: rotate(180deg);
+        }
+
+        .card:first-child {
+            transform: rotate(-5deg) translateX(-20%);
+        }
+
+        .card:last-child {
+            transform: rotate(5deg) translateX(20%);
+            z-index: 1;
+        }
+
+        .hearts { color: red; }
+        .hearts::before, .hearts::after { content: attr(data-value) "♥"; }
+        .diamonds { color: red; }
+        .diamonds::before, .diamonds::after { content: attr(data-value) "♦"; }
+        .clubs { color: black; }
+        .clubs::before, .clubs::after { content: attr(data-value) "♣"; }
+        .spades { color: black; }
+        .spades::before, .spades::after { content: attr(data-value) "♠"; }
+
+        .card-symbol {
+            font-size: 72px;
+        }
+    </style>
+</head>
+<body>
+    <div class="hand-container">
+        <div class="card hearts" data-value="A">
+            <span class="card-symbol">♥</span>
+        </div>
+        <div class="card spades" data-value="K">
+            <span class="card-symbol">♠</span>
+        </div>
+    </div>
+</body>
+</html>
