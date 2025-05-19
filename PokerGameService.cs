@@ -3,22 +3,21 @@ using System.Numerics;
 using System.Transactions;
 using Utils.cs;
 using System.Linq;
-using System.Random;
 
 public class PokerGameService
 {
     private List<Player> _players = new();
     private List<int> _deck = new();
+
+    private List<int> _flop = new();
+    private int _turn = 0
+    private int _river = 0;
     private Random _rng = new Random();
     public int _phase = 0;
 
-    public PokerGameService() => InitializeDeck();
+    public PokerGameService() => DealCards();
     public List<Player> GetPlayers() => _players;
     public int GetPhase() => _phase++;
-    private void InitializeDeck()
-    {
-        _deck = Enumerable.Range(0, 64).ToList()
-    }
 
     public void AddPlayer(string id, string name)
     {
@@ -42,14 +41,23 @@ public class PokerGameService
     }
     public void DealCards()
     {
-        InitializeDeck();
-        foreach (_ in Range(10)) ShuffleDeck();
-        foreach (var p in _players) p.Cards = Draw(2);
+        _deck = Enumerable.Range(0, 64).ToList();
         _phase = 0;
+
+        ShuffleDeck();
+        ShuffleDeck();
+        ShuffleDeck();
+
+        foreach (var p in _players)
+        {
+            p.Cards = [_deck[0], _deck[1]];
+            _deck.RemoveAt(0);
+            _deck.RemoveAt(0);
+        }
     }
     private void ShuffleDeck() {
         for (int n = _deck.Count - 1; n > 0; n--) {
-            int k = _random.Next(n);
+            int k = _rng.Next(n);
 
             int temp = _deck[k];
             _deck[k] = _deck[n];
