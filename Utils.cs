@@ -5,7 +5,7 @@ namespace Utils.cs
         public string ConnectionId { get; set; } = "";
         public string Username { get; set; } = "";
         public List<int> Cards { get; set; } = new();
-        public string getHand() => $"{Cards[0]}, {Cards[1]}";
+        public string GetHand() => $"{Cards[0]},{Cards[1]}";
 }
 
 }

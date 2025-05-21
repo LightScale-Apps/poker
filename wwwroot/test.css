@@ -1,0 +1,281 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: radial-gradient(
+        circle at center,
+        #2d9900 0%,
+        #267F00 60%,
+        #1b5900 100%
+    );
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.status-container {
+    position: fixed;
+    top: min(4.5vw, 50px);
+    left: min(4.5vw, 50px);
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 11px;
+    z-index: 2;
+    max-width: 200px;
+}
+
+.status-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.status-indicator {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background-color: #4CAF50;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.players-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2px 8px;
+    padding: 4px 8px;
+    font-size: 10px;
+}
+
+.player-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.player-status {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background-color: #4CAF50;
+    flex-shrink: 0;
+}
+
+.player-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: min(4vw, 40px);
+    z-index: 1;
+}
+
+.cards-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: min(3vw, 30px);
+}
+
+.deal-button {
+    padding: min(1.8vw, 18px) min(3.6vw, 36px);
+    font-size: min(2.8vw, 22px);
+    background: linear-gradient(to bottom, #ffd700, #ffb700);
+    border: none;
+    border-radius: 50px;
+    color: #000;
+    cursor: pointer;
+    font-weight: bold;
+    min-width: min(40vw, 400px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+}
+
+.deal-button:hover {
+    transform: translateY(-2px);
+}
+
+.deal-button:active {
+    transform: translateY(1px);
+}
+
+.card {
+    width: min(15vw, 140px);
+    height: min(22vw, 200px);
+    background-color: white;
+    border-radius: min(1.5vw, 15px);
+    position: relative;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+}
+
+.card::before,
+.card::after {
+    position: absolute;
+    font-size: min(3vw, 24px);
+}
+
+.card::before {
+    top: min(1.5vw, 15px);
+    left: min(1.5vw, 15px);
+}
+
+.card::after {
+    bottom: min(1.5vw, 15px);
+    right: min(1.5vw, 15px);
+    transform: rotate(180deg);
+}
+
+.hearts { color: red; }
+.hearts::before, .hearts::after { content: attr(data-value) "♥"; }
+.diamonds { color: red; }
+.diamonds::before, .diamonds::after { content: attr(data-value) "♦"; }
+.clubs { color: black; }
+.clubs::before, .clubs::after { content: attr(data-value) "♣"; }
+.spades { color: black; }
+.spades::before, .spades::after { content: attr(data-value) "♠"; }
+
+.card-symbol {
+    font-size: min(8vw, 72px);
+}
+
+
+.hand-container {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+}
+
+.hand-container .card {
+    width: 100%;
+    height: 260px;
+    margin: 25px 0px;
+    border-radius: 20px;
+}
+
+.hand-container .card-symbol {
+    font-size: 108px;
+    rotate: 90deg;
+}
+
+.hand-container .card::before {
+    font-size: 42px;
+    rotate: 90deg;
+    top: 30px;
+    left: 20px;
+}
+
+.hand-container .card::after {
+    font-size: 42px;
+    rotate: -90deg;
+    bottom: 30px;
+    right: 20px
+}
+
+.hand-container .text-box {
+    background-color: rgba(0, 144, 0, 0.8);
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 200px;
+    bottom: 0px;
+    left: 0;
+    font-size: 28px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.6);
+    padding: 20px;
+}
+
+.hand-container .text-box h1 {
+    padding-bottom: 8px;
+    border-bottom: 5px solid;
+}
+
+
+
+
+
+
+
+
+
+/* Style 1 - Clean and minimal */
+.input-style-1 {
+    width: 100%;
+    padding: 16px;
+    font-size: 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 8px;
+}
+
+.input-style-1::placeholder {
+    color: #9e9e9e;
+}
+
+/* Style 2 - More pronounced shadow and border */
+.input-style-2 {
+    width: 100%;
+    padding: 18px;
+    font-size: 16px;
+    border: 2px solid #dadada;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+    background-color: #ffffff;
+    transition: all 0.2s ease;
+}
+
+.input-style-2::placeholder {
+    color: #757575;
+}
+
+.input-style-2:focus {
+    border-color: #2196f3;
+    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.15);
+    outline: none;
+}
+
+/* Style 3 - Pill shape with subtle inner shadow */
+.input-style-3 {
+    width: 100%;
+    padding: 16px 24px;
+    font-size: 16px;
+    border: 1px solid #eeeeee;
+    border-radius: 9999px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05),
+                0 2px 4px rgba(0, 0, 0, 0.05);
+    background-color: #fafafa;
+}
+
+.input-style-3::placeholder {
+    color: #666666;
+}

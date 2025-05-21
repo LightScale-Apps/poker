@@ -15,7 +15,7 @@ public class PokerHub : Hub
     public async Task NextCard()
     {
         var p = _gameService.GetPhase();
-        Clients.All.SendAsync("GamePhase", p);
+        await Clients.All.SendAsync("GamePhase", p);
         switch (p)
         {
             case 0:
@@ -44,7 +44,7 @@ public class PokerHub : Hub
     public async Task ResetGame() {
         _gameService.DealCards();
         foreach (var player in _gameService.GetPlayers()) {
-            await Clients.Client(player.ConnectionId).SendAsync("Hand", player.getHand());
+            await Clients.Client(player.ConnectionId).SendAsync("Hand", player.GetHand());
         }
     }
 

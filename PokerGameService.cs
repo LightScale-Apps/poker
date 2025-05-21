@@ -37,7 +37,7 @@ public class PokerGameService
     }
     public void DealCards()
     {
-        _deck = Enumerable.Range(0, 64).ToList();
+        _deck = Enumerable.Range(0, 52).ToList();
         _phase = 0;
 
         ShuffleDeck();
