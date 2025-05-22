@@ -90,7 +90,6 @@ connection.on("PlayerList", (allPlayers) => {
     div.className = "player-item";
     let status = document.createElement("div");
     status.className = "player-status";
-    status.innerHTML = isInGame(playerName);
 
     let span = document.createElement("span");
     span.className = "player-name";
