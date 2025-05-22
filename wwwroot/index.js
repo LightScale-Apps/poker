@@ -12,6 +12,8 @@ var playerList = document.getElementById("playerList");
 var playerNum = document.getElementById("playerNumber");
 var tableCards = document.getElementById("tableCards");
 
+var buttonText = document.getElementById("buttonText");
+
 //for client
 var playerName = document.getElementById("playerNameText");
 var userText = document.getElementById("username");
@@ -136,20 +138,25 @@ function getName() {
 
 //for both
 connection.on("GamePhase", (p) => {
-  switch (p) {
+  switch (parseInt(p)) {
     case 3:
-      buttonText.innerText = "Flop \u2192";
       tableCards.innerHTML = "";
+      buttonText.innerText = "Flop \u2192";
       break;
     case 2:
       buttonText.innerText = "Next Hand $$$";
       break;
     case 1:
-      buttonText.innerText = "River \u2680\u2681\u2682\u2683\u2684\u2685";
+      buttonText.innerText = "River \u{1F30A}\u{1F30A}\u{1F30A}";
+      break;
     case 0:
       buttonText.innerText = "Turn \u2680\u2681\u2682\u2683\u2684\u2685";
+      break;
+    default:
+      break;
   }
 });
+
 async function CONNECT() {
   try {
     await connection.start();
