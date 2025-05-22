@@ -42,8 +42,9 @@ public class PokerHub : Hub
     }
 
     public async Task ResetGame() {
-        _gameService.DealCards();
-        foreach (var player in _gameService.GetPlayers()) {
+	_gameService.RemovePlayer(Context.ConnectionId);
+
+        foreach (var player in _gameService.DealCards()) {
             await Clients.Client(player.ConnectionId).SendAsync("Hand", player.GetHand());
         }
     }

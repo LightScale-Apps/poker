@@ -23,6 +23,7 @@ async function NEXT() {
   await connection.invoke("NextCard");
 }
 
+
 var SUITS = [
   {
     full: "clubs",
@@ -83,6 +84,9 @@ function renderCard(number) {
   return card;
 }
 
+function isInGame(name) {
+     
+
 //for Host
 connection.on("PlayerList", (allPlayers) => {
   playerList.innerHTML = "";
@@ -91,6 +95,7 @@ connection.on("PlayerList", (allPlayers) => {
     div.className = "player-item";
     let status = document.createElement("div");
     status.className = "player-status";
+    status.innerHTML = isInGame(playerName);
 
     let span = document.createElement("span");
     span.className = "player-name";
@@ -114,12 +119,11 @@ connection.on("CardsDealt", (cardList) => {
 CLIENT_CARDS = [];
 //for Client
 connection.on("Hand", (c) => {
-  holeCards.innerHTML = "";
+  holeCards.innerHTML = ACE + ACE;
 
   let c1 = parseInt(c.split(",")[0]);
   let c2 = parseInt(c.split(",")[1]);
-  holeCards.appendChild(renderCard(c1));
-  holeCards.appendChild(renderCard(c2));
+
   CLIENT_CARDS = [c1, c2];
 });
 
@@ -133,7 +137,18 @@ function getName() {
   } else {
     playerName.innerHTML = username;
     connection.invoke("JoinPlayer", username);
+    window.localStorage.setItem("lastName", username);
   }
+}
+
+function initName() {
+	localName = window.localStorage.getItem("lastName");
+	if (localName == undefined) {
+		return null;
+	} else {
+		connection.invoke("JoinPlayer", localName);
+		playerName.innerHTML = localName;
+	}
 }
 
 //for both
@@ -167,6 +182,10 @@ async function CONNECT() {
   }
 }
 CONNECT();
+
+connection.on("ClearCache", () => {
+	window.localStorage.removeItem("lastName");
+}); 
 
 ACE =
   '<div class="card heart spades clubs diamonds" data-value="A"><span class="card-symbol">♦♣♥♠</span></div>';

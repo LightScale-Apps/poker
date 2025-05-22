@@ -11,6 +11,9 @@ public class PokerGameService
     private Random _rng = new Random();
     public int _phase = 0;
 
+
+    public List<Player> _playersThisGame = new();
+
     public PokerGameService() => DealCards();
     public List<Player> GetPlayers() => _players;
     public int GetPhase() => _phase++;
@@ -35,7 +38,7 @@ public class PokerGameService
         }
         return hand;
     }
-    public void DealCards()
+    public List<Player> DealCards()
     {
         _deck = Enumerable.Range(0, 52).ToList();
         _phase = 0;
@@ -44,12 +47,15 @@ public class PokerGameService
         ShuffleDeck();
         ShuffleDeck();
 
-        foreach (var p in _players)
+	_playersThisGame = _players;		
+
+        foreach (var p in _playersThisGame)
         {
             p.Cards = [_deck[0], _deck[1]];
             _deck.RemoveAt(0);
             _deck.RemoveAt(0);
         }
+	return _playersThisGame;
     }
     private void ShuffleDeck() {
         for (int n = _deck.Count - 1; n > 0; n--) {
