@@ -23,7 +23,6 @@ async function NEXT() {
   await connection.invoke("NextCard");
 }
 
-
 var SUITS = [
   {
     full: "clubs",
@@ -84,8 +83,7 @@ function renderCard(number) {
   return card;
 }
 
-function isInGame(name) {
-     
+function isInGame(name) {}
 
 //for Host
 connection.on("PlayerList", (allPlayers) => {
@@ -142,13 +140,13 @@ function getName() {
 }
 
 function initName() {
-	localName = window.localStorage.getItem("lastName");
-	if (localName == undefined) {
-		return null;
-	} else {
-		connection.invoke("JoinPlayer", localName);
-		playerName.innerHTML = localName;
-	}
+  localName = window.localStorage.getItem("lastName");
+  if (localName == undefined) {
+    return null;
+  } else {
+    connection.invoke("JoinPlayer", localName);
+    playerName.innerHTML = localName;
+  }
 }
 
 //for both
@@ -184,8 +182,8 @@ async function CONNECT() {
 CONNECT();
 
 connection.on("ClearCache", () => {
-	window.localStorage.removeItem("lastName");
-}); 
+  window.localStorage.removeItem("lastName");
+});
 
 ACE =
   '<div class="card heart spades clubs diamonds" data-value="A"><span class="card-symbol">♦♣♥♠</span></div>';
