@@ -13,15 +13,14 @@ var playerNum = document.getElementById("playerNumber");
 var tableCards = document.getElementById("tableCards");
 
 var buttonText = document.getElementById("buttonText");
+buttonText.addEventListener("click", () => {
+  connection.invoke("NextCard");
+});
 
 //for client
 var playerName = document.getElementById("playerNameText");
 var userText = document.getElementById("username");
 var holeCards = document.getElementById("myCards");
-
-async function NEXT() {
-  await connection.invoke("NextCard");
-}
 
 var SUITS = [
   {
