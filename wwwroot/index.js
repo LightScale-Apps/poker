@@ -83,8 +83,6 @@ function renderCard(number) {
   return card;
 }
 
-function isInGame(name) {}
-
 //for Host
 connection.on("PlayerList", (allPlayers) => {
   playerList.innerHTML = "";
