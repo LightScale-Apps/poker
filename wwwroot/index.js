@@ -1,5 +1,5 @@
 var CARD_DECK = [];
-for (val in [
+for (val of [
   "2",
   "3",
   "4",
