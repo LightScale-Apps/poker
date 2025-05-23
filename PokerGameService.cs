@@ -8,7 +8,7 @@ public class PokerGameService
 {
     private List<Player> _players = new();
     private List<int> _deck = new();
-    private List<int> _dealtCards = new();
+    public List<int> _dealtCards = new();
     private Random _rng = new Random();
     public int _phase = 0;
 
@@ -62,7 +62,7 @@ public class PokerGameService
             _deck.RemoveAt(0);
             _deck.RemoveAt(0);
         }
-        
+
 	    return _playersThisGame;
     }
     private void ShuffleDeck() {
