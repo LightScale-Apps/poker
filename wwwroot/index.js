@@ -122,12 +122,12 @@ function getName() {
   }
 }
 function initName() {
-  let localName = window.localStorage.getItem("lastName");
-  if (localName == undefined) {
+  let fromLocalStorage = window.localStorage.getItem("lastName");
+  if (fromLocalStorage == undefined) {
     return null;
   } else {
-    connection.invoke("JoinPlayer", localName);
-    playerName.innerHTML = localName;
+    connection.invoke("JoinPlayer", fromLocalStorage);
+    playerName.innerHTML = fromLocalStorage;
   }
 }
 
