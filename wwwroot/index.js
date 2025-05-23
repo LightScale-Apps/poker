@@ -123,20 +123,19 @@ connection.on("Hand", (c) => {
 
 //for Client
 function getName() {
-  let name = prompt("Enter Username");
+  let name = prompt("Enter Username").trim();
 
-  const username = name.trim();
-  if (!username) {
+  if (!name) {
     playerName.innerText = "Enter Name...";
   } else {
-    playerName.inenrText = username;
-    connection.invoke("JoinPlayer", username);
-    window.localStorage.setItem("lastName", username);
+    playerName.inenrText = name;
+
+    connection.invoke("JoinPlayer", name);
+    window.localStorage.setItem("lastName", name);
   }
 }
-
 function initName() {
-  localName = window.localStorage.getItem("lastName");
+  let localName = window.localStorage.getItem("lastName");
   if (localName == undefined) {
     return null;
   } else {
