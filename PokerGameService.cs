@@ -7,21 +7,25 @@ using System.Linq;
 public class PokerGameService
 {
     private List<Player> _players = new();
-    private List<int> _deck = new();
-    public List<int> _dealtCards = new();
-    private Random _rng = new Random();
+    public List<Player> GetPlayers() => _players;
+    
+    
+    
     public int _phase = 0;
+    public int GetPhase() => _phase++;
+    public int CurrentPhase() => (_phase == 0) ? 3 : _phase - 1;
 
 
-    public List<Player> _playersThisGame = new();
+    private Random _rng = new Random();
+    private List<int> _deck = new();
+
+
+    public List<int> _dealtCards = [];
+    public List<int> DealtCards() => _dealtCards;
+
 
     public PokerGameService() => DealCards();
-    public List<Player> GetPlayers() => _players;
-    public int GetPhase() => _phase++;
 
-    public int CurrentPhase() => _phase;
-
-    public List<int> DealtCards() => _dealtCards;
 
     public void AddPlayer(string id, string name)
     {
@@ -52,18 +56,16 @@ public class PokerGameService
 
         ShuffleDeck();
         ShuffleDeck();
-        ShuffleDeck();
+        ShuffleDeck();	
 
-	    _playersThisGame = _players;		
-
-        foreach (var p in _playersThisGame)
+        foreach (var p in _players)
         {
             p.Cards = [_deck[0], _deck[1]];
             _deck.RemoveAt(0);
             _deck.RemoveAt(0);
         }
 
-	    return _playersThisGame;
+	    return _players;
     }
     private void ShuffleDeck() {
         for (int n = _deck.Count - 1; n > 0; n--) {

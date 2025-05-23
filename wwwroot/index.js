@@ -74,16 +74,16 @@ async function INITIALIZE_HOST(srConnection) {
     switch (parseInt(phase)) {
       case 3: //Reset the Game
         _tableCards.innerHTML = "";
-        buttonText.innerText = "Flop \u2192";
+        _buttonText.innerText = "Flop \u2192";
         break;
       case 2: //SHow the river
-        buttonText.innerText = "Next Hand $$$";
+        _buttonText.innerText = "Next Hand $$$";
         break;
       case 1: //Show the turn
-        buttonText.innerText = "River \u{1F30A}\u{1F30A}\u{1F30A}";
+        _buttonText.innerText = "River \u{1F30A}\u{1F30A}\u{1F30A}";
         break;
       case 0: //show the flop
-        buttonText.innerText = "Turn \u2680\u2681\u2682\u2683\u2684\u2685";
+        _buttonText.innerText = "Turn \u2680\u2681\u2682\u2683\u2684\u2685";
         break;
       default:
         break;
