@@ -22,7 +22,7 @@
     <script src="index.js" type="text/javascript"></script>
     <script type="text/javascript">
 
-        document.onload(() => {
+        window.onload(() => {
             const connection = new signalR.HubConnectionBuilder()
             .withUrl("/pokerhub")
             .withAutomaticReconnect()
