@@ -25,6 +25,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
     <script src="index.js" type="text/javascript"></script>
     <script type="text/javascript">
+
         window.onload = function() {
             const connection = new signalR.HubConnectionBuilder()
             .withUrl("/pokerhub")
@@ -33,6 +34,7 @@
 
             CONNECT(connection, INITIALIZE_HOST);
         }
+        
     </script>
 </body>
 </html>

@@ -8,6 +8,7 @@ public class PokerGameService
 {
     private List<Player> _players = new();
     private List<int> _deck = new();
+    private List<int> _dealtCards = new();
     private Random _rng = new Random();
     public int _phase = 0;
 
@@ -17,6 +18,10 @@ public class PokerGameService
     public PokerGameService() => DealCards();
     public List<Player> GetPlayers() => _players;
     public int GetPhase() => _phase++;
+
+    public int CurrentPhase() => _phase;
+
+    public List<int> DealtCards() => _dealtCards;
 
     public void AddPlayer(string id, string name)
     {
@@ -34,6 +39,7 @@ public class PokerGameService
         var hand = new List<int>();
         while (hand.Count < cards) {
             hand.Add(_deck[0]);
+            _dealtCards.Add(_deck[0]);
             _deck.RemoveAt(0);
         }
         return hand;
@@ -42,12 +48,13 @@ public class PokerGameService
     {
         _deck = Enumerable.Range(0, 52).ToList();
         _phase = 0;
+        _dealtCards = new();
 
         ShuffleDeck();
         ShuffleDeck();
         ShuffleDeck();
 
-	_playersThisGame = _players;		
+	    _playersThisGame = _players;		
 
         foreach (var p in _playersThisGame)
         {
@@ -55,7 +62,8 @@ public class PokerGameService
             _deck.RemoveAt(0);
             _deck.RemoveAt(0);
         }
-	return _playersThisGame;
+        
+	    return _playersThisGame;
     }
     private void ShuffleDeck() {
         for (int n = _deck.Count - 1; n > 0; n--) {

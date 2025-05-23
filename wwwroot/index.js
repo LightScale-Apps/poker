@@ -89,6 +89,7 @@ async function INITIALIZE_HOST(srConnection) {
         break;
     }
   });
+  srConnection.invoke("UpdateHost");
 
   _buttonText.addEventListener("click", () => {
     srConnection.invoke("NextCard");

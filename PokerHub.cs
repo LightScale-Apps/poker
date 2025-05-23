@@ -11,7 +11,6 @@ public class PokerHub : Hub
     public PokerHub(PokerGameService gameService) {
         _gameService = gameService;
     }
-
     public async Task NextCard()
     {
         var p = _gameService.GetPhase();
@@ -21,7 +20,8 @@ public class PokerHub : Hub
             case 0:
                 await Clients.All.SendAsync("CardsDealt", _gameService.Draw(3));
                 break;
-            case 1: case 2:
+            case 1:
+            case 2:
                 await Clients.All.SendAsync("CardsDealt", _gameService.Draw(1));
                 break;
             default:
@@ -41,10 +41,22 @@ public class PokerHub : Hub
         await ListPlayers();
     }
 
-    public async Task ResetGame() {
-	_gameService.RemovePlayer(Context.ConnectionId);
+    public async Task UpdateHost()
+    {
+        var Host = Clients.Caller;
+        var players = _gameService.GetPlayers();
+        
+        await Host.SendAsync("PlayerList", players.Select(p => p.Username).ToList());
+        await Host.SendAsync("GamePhase", _gameService.CurrentPhase());
+        await Host.SendAsync("CardsDealt", _gameService.DealCards());
+    }
 
-        foreach (var player in _gameService.DealCards()) {
+    public async Task ResetGame()
+    {
+        _gameService.RemovePlayer(Context.ConnectionId);
+
+        foreach (var player in _gameService.DealCards())
+        {
             await Clients.Client(player.ConnectionId).SendAsync("Hand", player.GetHand());
         }
     }
