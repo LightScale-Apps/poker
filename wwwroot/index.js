@@ -18,7 +18,7 @@ buttonText.addEventListener("click", () => {
 });
 
 //for client
-var playerName = document.getElementById("playerNameText");
+var playerName = document.getElementById("nameText");
 var userText = document.getElementById("username");
 var holeCards = document.getElementById("myCards");
 
@@ -127,9 +127,9 @@ function getName() {
 
   const username = name.trim();
   if (!username) {
-    playerName.innerHTML = "Enter Name...";
+    playerName.innerText = "Enter Name...";
   } else {
-    playerName.innerHTML = username;
+    playerName.inenrText = username;
     connection.invoke("JoinPlayer", username);
     window.localStorage.setItem("lastName", username);
   }
