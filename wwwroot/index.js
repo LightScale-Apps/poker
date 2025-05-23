@@ -1,60 +1,29 @@
-const connection = new signalR.HubConnectionBuilder()
-  .withUrl("/pokerhub")
-  .withAutomaticReconnect()
-  .build();
-
-//for both
-var statusText = document.getElementById("status");
-
-//for host
-var playerList = document.getElementById("playerList");
-var playerNum = document.getElementById("playerNumber");
-var tableCards = document.getElementById("tableCards");
-
-var buttonText = document.getElementById("buttonText");
-
-//for client
-var playerName = document.getElementById("nameText");
-var holeCards = document.getElementById("myCards");
-
-function newDeck() {
-  let _deck = [];
-
-  for (let i = 0; i < 13; i++) {
-    let val;
-
-    switch (i) {
-      case 12:
-        val = "A";
-        break;
-      case 11:
-        val = "K";
-        break;
-      case 10:
-        val = "Q";
-        break;
-      case 9:
-        val = "J";
-        break;
-      default:
-        val = i + 2;
-        break;
-    }
-
-    _deck.push(
-      [{ full: "clubs", symbol: "♣" }, val],
-      [{ full: "diamonds", symbol: "♦" }, val],
-      [{ full: "hearts", symbol: "♥" }, val],
-      [{ full: "spades", symbol: "♠" }, val]
-    );
-  }
-  return _deck;
+var CARD_DECK = [];
+for (val in [
+  "2",
+  "3",
+  "4",
+  "5",
+  "6",
+  "7",
+  "8",
+  "9",
+  "10",
+  "J",
+  "Q",
+  "K",
+  "A",
+]) {
+  CARD_DECK.push(
+    [{ full: "clubs", symbol: "♣" }, val],
+    [{ full: "diamonds", symbol: "♦" }, val],
+    [{ full: "hearts", symbol: "♥" }, val],
+    [{ full: "spades", symbol: "♠" }, val]
+  );
 }
 
-var CARD = newDeck();
-
 function renderCard(number) {
-  const [suit, value] = CARD[number];
+  const [suit, value] = CARD_DECK[number];
 
   let card = document.createElement("div");
   card.className = "card " + suit.full;
@@ -69,111 +38,117 @@ function renderCard(number) {
   return card;
 }
 
-//for Host
-connection.on("PlayerList", (allPlayers) => {
-  playerList.innerHTML = "";
-  for (let playerName of allPlayers) {
-    let div = document.createElement("div");
-    div.className = "player-item";
-    let status = document.createElement("div");
-    status.className = "player-status";
+async function INITIALIZE_HOST(srConnection) {
+  var _playerList = document.getElementById("playerList");
+  var _tableCards = document.getElementById("tableCards");
+  var _buttonText = document.getElementById("buttonText");
 
-    let span = document.createElement("span");
-    span.className = "player-name";
-    span.innerHTML = playerName;
+  srConnection.on("PlayerList", (allPlayers) => {
+    _playerList.innerHTML = "";
+    for (let p of allPlayers) {
+      let div = document.createElement("div");
+      div.className = "player-item";
 
-    div.appendChild(status);
-    div.appendChild(span);
+      let status = document.createElement("div");
+      status.className = "player-status";
 
-    playerList.appendChild(div);
-  }
-  playerNum.textContent = allPlayers.length;
-});
+      let span = document.createElement("span");
+      span.className = "player-name";
 
-//for Host
-connection.on("CardsDealt", (cardList) => {
-  cardList.forEach((c) => {
-    tableCards.appendChild(renderCard(c));
+      span.innerHTML = p;
+
+      div.appendChild(status);
+      div.appendChild(span);
+
+      _playerList.appendChild(div);
+    }
   });
-});
 
-CLIENT_CARDS = [];
-//for Client
-connection.on("Hand", (c) => {
-  holeCards.innerHTML = ACE + ACE;
+  srConnection.on("CardsDealt", (cardList) => {
+    cardList.forEach((c) => {
+      _tableCards.appendChild(renderCard(c));
+    });
+  });
 
-  let c1 = parseInt(c.split(",")[0]);
-  let c2 = parseInt(c.split(",")[1]);
+  srConnection.on("GamePhase", (phase) => {
+    switch (parseInt(phase)) {
+      case 3: //Reset the Game
+        _tableCards.innerHTML = "";
+        buttonText.innerText = "Flop \u2192";
+        break;
+      case 2: //SHow the river
+        buttonText.innerText = "Next Hand $$$";
+        break;
+      case 1: //Show the turn
+        buttonText.innerText = "River \u{1F30A}\u{1F30A}\u{1F30A}";
+        break;
+      case 0: //show the flop
+        buttonText.innerText = "Turn \u2680\u2681\u2682\u2683\u2684\u2685";
+        break;
+      default:
+        break;
+    }
+  });
 
-  CLIENT_CARDS = [c1, c2];
-});
-
-//for Client
-function getName() {
-  let name = prompt("Enter Username").trim();
-
-  if (!name) {
-    playerName.innerText = "Enter Name...";
-  } else {
-    playerName.inenrText = name;
-
-    connection.invoke("JoinPlayer", name);
-    window.localStorage.setItem("lastName", name);
-  }
+  _buttonText.addEventListener("click", () => {
+    srConnection.invoke("NextCard");
+  });
 }
-function initName() {
+
+async function INITIALIZE_CLIENT(srConnection) {
+  TOGGLE = true;
+  ACE =
+    '<div class="card heart spades clubs diamonds" data-value="A"><span class="card-symbol">♦♣♥♠</span></div>';
+  CLIENT_CARDS = [];
+  var _playerName = document.getElementById("nameText");
+  var _holeCards = document.getElementById("myCards");
+
   let fromLocalStorage = window.localStorage.getItem("lastName");
-  if (fromLocalStorage == undefined) {
-    return null;
-  } else {
-    connection.invoke("JoinPlayer", fromLocalStorage);
-    playerName.innerHTML = fromLocalStorage;
+  if (fromLocalStorage != undefined) {
+    srConnection.invoke("JoinPlayer", fromLocalStorage);
+    _playerName.innerHTML = fromLocalStorage;
   }
+
+  srConnection.on("Hand", (handCards) => {
+    _holeCards.innerHTML = ACE + ACE;
+    CLIENT_CARDS = handCards.split(",");
+  });
+
+  _holeCards.addEventListener("click", (e) => {
+    e.preventDefault();
+    _holeCards.innerHTML = "";
+    TOGGLE = !TOGGLE;
+    if (TOGGLE) {
+      _holeCards.innerHTML += ACE + ACE;
+    } else {
+      _holeCards.appendChild(renderCard(parseInt(CLIENT_CARDS[0])));
+      _holeCards.appendChild(renderCard(parseInt(CLIENT_CARDS[1])));
+    }
+  });
+
+  document.getElementById("nameButton").addEventListener("click", () => {
+    let name = prompt("Enter Username").trim();
+
+    if (!name) {
+      _playerName.innerText = "Enter Name...";
+    } else {
+      _playerName.innerText = name;
+      srConnection.invoke("JoinPlayer", name);
+      window.localStorage.setItem("lastName", name);
+    }
+  });
 }
 
-//for both
-connection.on("GamePhase", (p) => {
-  switch (parseInt(p)) {
-    case 3:
-      tableCards.innerHTML = "";
-      buttonText.innerText = "Flop \u2192";
-      break;
-    case 2:
-      buttonText.innerText = "Next Hand $$$";
-      break;
-    case 1:
-      buttonText.innerText = "River \u{1F30A}\u{1F30A}\u{1F30A}";
-      break;
-    case 0:
-      buttonText.innerText = "Turn \u2680\u2681\u2682\u2683\u2684\u2685";
-      break;
-    default:
-      break;
-  }
-});
-
-async function CONNECT() {
+async function CONNECT(srConnection, initFunction) {
+  let _statusText = document.getElementById("status");
   try {
-    await connection.start();
-    statusText.innerHTML = connection.state;
+    await srConnection.start();
+    _statusText.innerHTML = srConnection.state;
+    if (srConnection.state == "Connected") {
+      initFunction(srConnection);
+    }
   } catch (err) {
-    statusText.innerHTML = err + " | Trying again...";
-    setTimeout(CONNECT, 5000);
+    _statusText.innerHTML = err + " | Trying again...";
+    setTimeout(CONNECT, 5000, srConnection, initFunction);
   }
 }
-
-ACE =
-  '<div class="card heart spades clubs diamonds" data-value="A"><span class="card-symbol">♦♣♥♠</span></div>';
-
-TOGGLE = true;
-document.getElementById("myCards").addEventListener("click", (e) => {
-  e.preventDefault();
-  holeCards.innerHTML = "";
-  TOGGLE = !TOGGLE;
-  if (TOGGLE) {
-    holeCards.innerHTML += ACE + ACE;
-  } else {
-    holeCards.appendChild(renderCard(CLIENT_CARDS[0]));
-    holeCards.appendChild(renderCard(CLIENT_CARDS[1]));
-  }
-});
