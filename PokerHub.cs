@@ -45,10 +45,10 @@ public class PokerHub : Hub
     {
         var Host = Clients.Caller;
         var players = _gameService.GetPlayers();
-        
+
         await Host.SendAsync("PlayerList", players.Select(p => p.Username).ToList());
         await Host.SendAsync("GamePhase", _gameService.CurrentPhase());
-        await Host.SendAsync("CardsDealt", _gameService.DealCards());
+        await Host.SendAsync("CardsDealt", _gameService.DealtCards());
     }
 
     public async Task ResetGame()
