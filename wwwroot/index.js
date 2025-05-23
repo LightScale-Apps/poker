@@ -5,7 +5,6 @@ const connection = new signalR.HubConnectionBuilder()
 
 //for both
 var statusText = document.getElementById("status");
-var phaseText = document.getElementById("phase");
 
 //for host
 var playerList = document.getElementById("playerList");
@@ -13,58 +12,46 @@ var playerNum = document.getElementById("playerNumber");
 var tableCards = document.getElementById("tableCards");
 
 var buttonText = document.getElementById("buttonText");
-buttonText.addEventListener("click", () => {
-  connection.invoke("NextCard");
-});
 
 //for client
 var playerName = document.getElementById("nameText");
-var userText = document.getElementById("username");
 var holeCards = document.getElementById("myCards");
 
-var SUITS = [
-  {
-    full: "clubs",
-    symbol: "♣",
-  },
-  {
-    full: "diamonds",
-    symbol: "♦",
-  },
-  {
-    full: "hearts",
-    symbol: "♥",
-  },
-  {
-    full: "spades",
-    symbol: "♠",
-  },
-];
+function newDeck() {
+  let _deck = [];
 
-var CARD = [];
+  for (let i = 0; i < 13; i++) {
+    let val;
 
-for (let i = 0; i < 13; i++) {
-  let val;
+    switch (i) {
+      case 12:
+        val = "A";
+        break;
+      case 11:
+        val = "K";
+        break;
+      case 10:
+        val = "Q";
+        break;
+      case 9:
+        val = "J";
+        break;
+      default:
+        val = i + 2;
+        break;
+    }
 
-  switch (i) {
-    case 12:
-      val = "A";
-      break;
-    case 11:
-      val = "K";
-      break;
-    case 10:
-      val = "Q";
-      break;
-    case 9:
-      val = "J";
-      break;
-    default:
-      val = i + 2;
-      break;
+    _deck.push(
+      [{ full: "clubs", symbol: "♣" }, val],
+      [{ full: "diamonds", symbol: "♦" }, val],
+      [{ full: "hearts", symbol: "♥" }, val],
+      [{ full: "spades", symbol: "♠" }, val]
+    );
   }
-  CARD.push([SUITS[0], val], [SUITS[1], val], [SUITS[2], val], [SUITS[3], val]);
+  return _deck;
 }
+
+var CARD = newDeck();
 
 function renderCard(number) {
   const [suit, value] = CARD[number];
@@ -174,11 +161,6 @@ async function CONNECT() {
     setTimeout(CONNECT, 5000);
   }
 }
-CONNECT();
-
-connection.on("ClearCache", () => {
-  window.localStorage.removeItem("lastName");
-});
 
 ACE =
   '<div class="card heart spades clubs diamonds" data-value="A"><span class="card-symbol">♦♣♥♠</span></div>';
