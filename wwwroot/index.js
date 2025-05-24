@@ -113,7 +113,7 @@ async function INITIALIZE_CLIENT(srConnection) {
   let handLocalStorage = window.localStorage.getItem("lastHand");
   if (handLocalStorage != undefined) {
     _holeCards.innerHTML = ACE + ACE;
-    CLIENT_CARDS = handLocalStorage;
+    CLIENT_CARDS = handLocalStorage.split(",");
   }
 
   srConnection.on("Hand", (handCards) => {
