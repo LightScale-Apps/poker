@@ -104,15 +104,22 @@ async function INITIALIZE_CLIENT(srConnection) {
   var _playerName = document.getElementById("nameText");
   var _holeCards = document.getElementById("myCards");
 
-  let fromLocalStorage = window.localStorage.getItem("lastName");
-  if (fromLocalStorage != undefined) {
-    srConnection.invoke("JoinPlayer", fromLocalStorage);
-    _playerName.innerHTML = fromLocalStorage;
+  let nameLocalStorage = window.localStorage.getItem("lastName");
+  if (nameLocalStorage != undefined) {
+    srConnection.invoke("JoinPlayer", nameLocalStorage);
+    _playerName.innerHTML = nameLocalStorage;
+  }
+
+  let handLocalStorage = window.localStorage.getItem("lastHand");
+  if (handLocalStorage != undefined) {
+    _holeCards.innerHTML = ACE + ACE;
+    CLIENT_CARDS = handLocalStorage;
   }
 
   srConnection.on("Hand", (handCards) => {
     _holeCards.innerHTML = ACE + ACE;
     CLIENT_CARDS = handCards.split(",");
+    window.localStorage.setItem("lastHand", CLIENT_CARDS);
   });
 
   _holeCards.addEventListener("click", (e) => {

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
@@ -37,7 +38,9 @@ public class PokerHub : Hub
     }
 
     public async Task JoinPlayer(string username) {
+
         _gameService.AddPlayer(Context.ConnectionId, username);
+        
         await ListPlayers();
     }
 
