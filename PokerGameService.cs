@@ -20,7 +20,7 @@ public class PokerGameService
 
 
     private Random _rng = new Random();
-    private List<int> _deck = new();
+    private List<int> _deck = Enumerable.Range(0, 52).ToList();
 
 
     public List<int> _dealtCards = [];
