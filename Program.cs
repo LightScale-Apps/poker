@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.SignalR;
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSignalR();
@@ -11,6 +9,7 @@ app.UseHttpsRedirection();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
+
 app.MapHub<PokerHub>("/pokerhub");
 
 app.Run();
